@@ -57,7 +57,7 @@ int main()
    //double t1 = 432000.00;  //10000;
 
 
-   double t1 = 100;
+   double t1 = 20;
    double x1[6];
    double vmean[6], kmean[6];
 
@@ -87,10 +87,10 @@ int main()
    elapsed = difftime(stop, start);
 
 
-   fprintf(hOutput,"Kepler Solution\n");
+ /*  fprintf(hOutput,"Kepler Solution\n");
    fprintf(hOutput, "x  = %20.10lf\ny  = %20.10lf\nz  = %20.10lf\n", x1[0], x1[1], x1[2]);   
    fprintf(hOutput, "xd = %20.10lf\nyd = %20.10lf\nzd = %20.10lf\n", x1[3], x1[4], x1[5]);   
-   fprintf(hOutput, "Execution time %6.2f\n", elapsed);
+   fprintf(hOutput, "Execution time %6.2f\n", elapsed);*/
    //fprintf(hOutput, "\nxxx= %20.10lf\n", xxx);
 
 
@@ -103,20 +103,20 @@ int main()
    time(&stop);
    elapsed = difftime(stop, start);
 
-   fprintf(hOutput,"Vinti Solution\n");
-   fprintf(hOutput, "x  = %20.10lf\ny  = %20.10lf\nz  = %20.10lf\n", x1[0], x1[1], x1[2]);   
-   fprintf(hOutput, "xd = %20.10lf\nyd = %20.10lf\nzd = %20.10lf\n", x1[3], x1[4], x1[5]);   
-   fprintf(hOutput, "Execution time %6.2f\n", elapsed);
+   //fprintf(hOutput,"Vinti Solution\n");
+   fprintf(hOutput, "%-.10lf\n%-.10lf\n%-.10lf\n", x1[0], x1[1], x1[2]);   // x,y,z
+   fprintf(hOutput, "%-.10lf\n%-.10lf\n%-.10lf\n", x1[3], x1[4], x1[5]);   // xd,yd,zd
+   //fprintf(hOutput, "Execution time %6.2f\n", elapsed);
 
    VintToKep(planet, vmean, kmean);
 
-   fprintf(hOutput,"\nVinti Mean Elements\n");
-   fprintf(hOutput,"Semimajor axis = %20.10lf\n", kmean[0]);
-   fprintf(hOutput,"Eccentricity   = %20.10lf\n", kmean[1]);
-   fprintf(hOutput,"Inclination    = %20.10lf\n", kmean[2]);
-   fprintf(hOutput,"Long Asc Node  = %20.10lf\n", kmean[3]);
-   fprintf(hOutput,"Arg of perigee = %20.10lf\n", kmean[4]);
-   fprintf(hOutput,"Mean anomaly   = %20.10lf\n", kmean[5]);
+   //fprintf(hOutput,"Vinti Mean Elements\n");
+   fprintf(hOutput,"%-.10lf\n", kmean[0]); //Semimajor axis =
+   fprintf(hOutput,"%-.10lf\n", kmean[1]); //Eccentricity   = 
+   fprintf(hOutput,"%-.10lf\n", kmean[2]); //Inclination    = 
+   fprintf(hOutput,"%-.10lf\n", kmean[3]); //Long Asc Node  = 
+   fprintf(hOutput,"%-.10lf\n", kmean[4]); //Arg of perigee = 
+   fprintf(hOutput,"%-.10lf", kmean[5]); //Mean anomaly   = 
    
    fclose(hOutput);
 }
