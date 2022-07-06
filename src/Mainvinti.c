@@ -57,7 +57,7 @@ int main()
    //double t1 = 432000.00;  //10000;
 
 
-   double t1 = 20;
+   double t1 = 10000;
    double x1[6];
    double vmean[6], kmean[6];
 
