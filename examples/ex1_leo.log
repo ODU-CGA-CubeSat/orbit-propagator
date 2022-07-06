@@ -1,0 +1,138 @@
+     Orbital and Celestial Mechanics   
+      Trajectory Propagation Models 
+ 
+ 
+ECI state vector at   t   =         .00 seconds
+x  =      2328.9659400000   km
+y  =     -5995.2160000000   km
+z  =      1719.9789400000   km
+xd =         2.9111011300   km/s
+yd =         -.9816405300   km/s
+zd =        -7.0904992200   km/s
+ 
+ 
+  Time,        t  =    0.000000000000000E+000 seconds
+  Osculating Classical Orbital Elements: 
+    semi-major axis     =     6640.262815499317000 km 
+    eccentricity        =   9.496210216913872E-003
+    inclination         =       72.853838974525400 deg
+    accending node      =      115.962302753882600 deg
+    argument of perigee =       57.735018723715720 deg
+    mean anomoly        =      105.534231958634600 deg
+ 
+  keplerian period =     5385.038986171515000 sec
+  apogee           =     6703.320147090854000 km
+  perigee          =     6577.205483907780000 km
+  altitude         =      279.567168133307900 km
+ 
+ 
+  -- Kepler model -- 
+  -- ************ -- 
+ECI state vector at   t   =    10000.00 seconds
+x  =      -500.5832559961   km
+y  =     -3075.2376202228   km
+z  =      5822.4061243021   km
+xd =         3.9383267135   km/s
+yd =        -6.1032449766   km/s
+zd =        -2.8166618485   km/s
+ 
+ 
+  Time,        t  =     10000.000000000000000 seconds
+  Osculating Classical Orbital Elements: 
+    semi-major axis     =     6640.262815473532000 km 
+    eccentricity        =   9.496210217058192E-003
+    inclination         =       72.853838974525420 deg
+    accending node      =      115.962302753882600 deg
+    argument of perigee =       57.735018708724450 deg
+    mean anomoly        =       54.053068929750460 deg
+ 
+  keplerian period =     5385.038986140147000 sec
+  apogee           =     6703.320147065783000 km
+  perigee          =     6577.205483881281000 km
+  altitude         =      225.504653915541900 km
+ 
+ 
+  -- SGP/SGP4/SDP4 model -- 
+  -- ******************* -- 
+ECI state vector at   t   =    10000.00 seconds
+x  =      -484.9477666739   km
+y  =     -3124.3991239220   km
+z  =      5795.9487586952   km
+xd =         3.9098923054   km/s
+yd =        -6.0841163285   km/s
+zd =        -2.8788548795   km/s
+ 
+ 
+  Time,        t  =     10000.000000000000000 seconds
+  Osculating Classical Orbital Elements: 
+    semi-major axis     =     6626.242470505722000 km 
+    eccentricity        =   9.069068929873400E-003
+    inclination         =       72.835135155240820 deg
+    accending node      =      115.663770934304900 deg
+    argument of perigee =       46.274972015286170 deg
+    mean anomoly        =       66.020627294714670 deg
+ 
+  keplerian period =     5367.992920499024000 sec
+  apogee           =     6686.336320216793000 km
+  perigee          =     6566.148620794651000 km
+  altitude         =      224.140352201095100 km
+ 
+ 
+  -- Vinti2 model -- 
+  -- ************ -- 
+ECI state vector at   t   =    10000.00 seconds
+x  =      -450.1549990849   km
+y  =     -3153.6122014224   km
+z  =      5782.9524825622   km
+xd =         3.9465990331   km/s
+yd =        -6.0433033796   km/s
+zd =        -2.9144221600   km/s
+ 
+ 
+  -- Vinti3 model -- 
+  -- ************ -- 
+ECI state vector at   t   =    10000.00 seconds
+x  =      -485.5222625436   km
+y  =     -3123.5190518057   km
+z  =      5796.3841096713   km
+xd =         3.9097618978   km/s
+yd =        -6.0846992290   km/s
+zd =        -2.8777002875   km/s
+ 
+ 
+  -- Vinti5 model -- 
+  -- ************ -- 
+ECI state vector at   t   =    10000.00 seconds
+x  =      -485.5222682584   km
+y  =     -3123.5190458865   km
+z  =      5796.3841118106   km
+xd =         3.9097618929   km/s
+yd =        -6.0846992371   km/s
+zd =        -2.8777002798   km/s
+ 
+ 
+  -- Vinti6 model -- 
+  -- ************ -- 
+ECI state vector at   t   =    10000.00 seconds
+x  =      -485.5222682586   km
+y  =     -3123.5190458862   km
+z  =      5796.3841118105   km
+xd =         3.9097618929   km/s
+yd =        -6.0846992371   km/s
+zd =        -2.8777002798   km/s
+ 
+ 
+  Time,        t  =     10000.000000000000000 seconds
+  Osculating Classical Orbital Elements: 
+    semi-major axis     =     6626.195470843920000 km 
+    eccentricity        =   9.060845920840209E-003
+    inclination         =       72.835155399976190 deg
+    accending node      =      115.663673129761900 deg
+    argument of perigee =       46.230997719030360 deg
+    mean anomoly        =       66.055376404206980 deg
+ 
+  keplerian period =     5367.935808175056000 sec
+  apogee           =     6686.234407046605000 km
+  perigee          =     6566.156534641234000 km
+  altitude         =      224.148352409258200 km
+ 
