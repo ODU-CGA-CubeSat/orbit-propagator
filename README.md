@@ -22,9 +22,9 @@ make
 
 ## Usage
 
-### Input File
+### Running main executable
 
-Create `inputStateVect.txt` in `build/` directory, example below (ECI)
+Create an `inputStateVect.txt` in the `build/` directory, example below (ECI)
 
 ```
 4063.75
@@ -35,15 +35,15 @@ Create `inputStateVect.txt` in `build/` directory, example below (ECI)
 0
 ```
 
-### Running
+In the `build/` directory, run main executable
 
 ```bash
 ./VintiCode
 ```
 
-Outputs new state vector to `outputStateVect.txt` (ECI cartesian and mean elements)
+This outputs a new state vector to `outputStateVect.txt` (ECI cartesian and mean elements)
 
-## State Vector Example
+#### State Vector Example
 
 The rows in `inputStateVect.txt` and `outputStateVect.txt` correspond to [ECI](https://en.wikipedia.org/wiki/Earth-centered_inertial) state vector which gives position and velocity in cartesian coordinates.
 ```
@@ -53,4 +53,12 @@ z  =      1719.9789400000   km
 xd =         2.9111011300   km/s
 yd =         -.9816405300   km/s
 zd =        -7.0904992200   km/s
+```
+
+### Running unit tests
+
+In the `build/` directory, run
+
+```bash
+ctest -V
 ```
