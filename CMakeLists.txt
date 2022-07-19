@@ -21,3 +21,21 @@ target_include_directories(${PROJECT_NAME}
 )
 
 target_link_libraries(orbit-propagator PUBLIC m)
+
+include(CTest)
+
+add_executable(test_vinti6
+    src/Vinti6.c
+    Unity/src/unity.c
+    test_vinti6.c
+)
+
+target_include_directories(test_vinti6
+    PUBLIC
+        ${PROJECT_SOURCE_DIR}/include
+)
+
+target_link_libraries(test_vinti6 PUBLIC m)
+
+add_test(test_vinti6
+    test_vinti6)
