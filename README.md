@@ -1,4 +1,6 @@
-# VintiCode
+# Orbit Propagator
+
+C library for performing orbit propagation, based on Vinti6 algorithm.
 
 ## Build with CMake
 
