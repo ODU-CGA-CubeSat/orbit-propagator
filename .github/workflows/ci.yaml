@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  deploy:
+  run-unit-tests:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
