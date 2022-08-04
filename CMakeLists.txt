@@ -4,7 +4,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 # Set the project name
-project (VintiCode)
+project (orbit-propagator)
 
 # Create a SOURCES variable with a link to all source files to compile
 set(SOURCES
@@ -20,4 +20,4 @@ target_include_directories(${PROJECT_NAME}
         ${PROJECT_SOURCE_DIR}/include
 )
 
-target_link_libraries(VintiCode PUBLIC m)
+target_link_libraries(orbit-propagator PUBLIC m)
