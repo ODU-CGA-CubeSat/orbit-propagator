@@ -1,6 +1,7 @@
 #include "Unity/src/unity.h"
 #include "Vinti6.h"
 #include "sofa.h"
+#include "sofam.h"
 #include "stdio.h"
 
 void setUp(void)
