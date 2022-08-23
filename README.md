@@ -4,11 +4,11 @@ C library for performing orbit propagation, based on Vinti6 algorithm.
 
 ## Cloning the repo
 
-Clone the https://github.com/odu-cga-cubesat/VintiCode.git[VintiCode] repo. Don't forget to use `--recurse-submodules` flag, or else you won't pull down some of the code needed to run unit tests.
+Clone the [Orbit Propagator](https://github.com/odu-cga-cubesat/orbit-propagator.git) repo. Don't forget to use `--recurse-submodules` flag, or else you won't pull down some of the code needed to run unit tests.
 
 ```bash
-git clone --recurse-submodules https://github.com/odu-cga-cubesat/VintiCode.git
-cd VintiCode
+git clone --recurse-submodules https://github.com/odu-cga-cubesat/orbit-propagator.git
+cd orbit-propagator
 ```
 
 Note: If you accidentally cloned without using `--recurse-submodules`, you can run `git submodule update --init --recursive` to pull down submodules needed to run unit tests.
