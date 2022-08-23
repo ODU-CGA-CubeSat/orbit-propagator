@@ -52,6 +52,49 @@ static void test_output_state_vect_for_leo(void)
    TEST_ASSERT_EQUAL_FLOAT(x1[5], -2.8777002798);
 }
 
+static void test_output_state_vect_for_heo(void)
+{
+   // Earth
+   double planet[4] = {6378.137, 398600.5, 1082.62999e-6, -2.53215e-6};
+
+   // Initial time
+   double t0 = 0;
+
+   // Initial state vector
+   double x0[6] = {-7401.6349600000, 1385.6790200000,  2315.3263700000,
+                   -0.3163486652, -6.4974499606, 2.8772974990};
+
+   // Final time
+   double t1 = 10000;
+
+   // Output state vector
+   double x1[6];
+
+   // V_mean
+   double vmean[6];
+
+   // Propagate state vector with Vinti6
+   Vinti6(planet, t0, x0, t1, x1, vmean);
+
+   // Verify ECI state vector for x
+   TEST_ASSERT_EQUAL_FLOAT(x1[0], 6712.0609670032);
+
+   // Verify ECI state vector for y
+   TEST_ASSERT_EQUAL_FLOAT(x1[1], -3985.3574556188);
+
+   // Verify ECI state vector for z
+   TEST_ASSERT_EQUAL_FLOAT(x1[2], -981.3263536512);
+
+   // Verify ECI state vector for xd
+   TEST_ASSERT_EQUAL_FLOAT(x1[3], 2.7986992752);
+
+   // Verify ECI state vector for yd
+   TEST_ASSERT_EQUAL_FLOAT(x1[4], 5.5685271110);
+
+   // Verify ECI state vector for zd
+   TEST_ASSERT_EQUAL_FLOAT(x1[5], -3.4494924891);
+}
+
 static void test_gps_to_ECI_state_vect(void)
 {
    // Recieve first and last gps pings. i.e., (lat_i lon_i alt_i), (lat_f lon_f alt_f)
@@ -115,6 +158,7 @@ int main(void)
    UnityBegin("test_vinti6.c");
 
    RUN_TEST(test_output_state_vect_for_leo);
+   RUN_TEST(test_output_state_vect_for_heo);
 
    return UnityEnd();
 }
