@@ -55,17 +55,17 @@ static void test_output_state_vect_for_leo(void)
    TEST_ASSERT_EQUAL_FLOAT(x1[5], -2.8777002798);
 }
 
-int test_ITRS_to_GCRS()
+void test_ITRS_to_GCRS(void)
 {
 	void pmat(const char[], double[3][3]);
 	int iy, im, id, ih, min;
 	double sec, xp, yp, dut1,
 		dx06, dy06,
 		utc1, utc2, tai1, tai2, tt1, tt2, ut11, ut12,
-		rc2ti[3][3], rpom[3][3],
+		rc2ti[3][3], rpom[3][3], it2rc[3][3],
 		rc2it[3][3], x, y, s,
 		rc2i[3][3], era, sp,
-		itrs[3], gcrs[3]
+		itrs[3], gcrs[3];
 
 	/* UTC. */
 	iy = 2023;
@@ -109,21 +109,21 @@ int test_ITRS_to_GCRS()
 	/* Form celestial-terrestrial matrix (including polar motion). */
 	iauRxr ( rpom, rc2ti, rc2it );
 	/* Invert GCRS-ITRS matrix to ITRS-GCRS. */
-	iauTr(rc2it,it2rc);
+	iauTr(rc2it,it2rc);//invert not transpose
 
 	/* Test Transofrmation Matrix*/
 	itrs[0] = 4072000;
 	itrs[1] = 0;
 	itrs[2] = 5111000;
 
-	rxp(it2rc,itrs,gcrs) // itrs * transform matrix
+	iauRxp(it2rc, itrs, gcrs); // itrs * transform matrix
 
 	// Verify GCRS (ECI) vector for x
-	TEST_ASSERT_EQUAL_FLOAT(gcrs[0], 3988588.14831142);
+	TEST_ASSERT_FLOAT_WITHIN(9.5, gcrs[0], 3988588.14831142);
 	// Verify GCRS (ECI) vector for y
-	TEST_ASSERT_EQUAL_FLOAT(gcrs[1], -873464.380671477);
+	TEST_ASSERT_FLOAT_WITHIN(9.5, gcrs[1], -873464.380671477);
 	// Verify GCRS (ECI) vector for z
-	TEST_ASSERT_EQUAL_FLOAT(gcrs[2], 5102129.90415257);
+	TEST_ASSERT_FLOAT_WITHIN(9.5, gcrs[2], 5102129.90415257);
 }
 
 
@@ -292,6 +292,7 @@ int main(void)
 
    RUN_TEST(test_output_state_vect_for_leo);
    RUN_TEST(test_output_state_vect_for_heo);
+   RUN_TEST(test_ITRS_to_GCRS);
 
    return UnityEnd();
 }
