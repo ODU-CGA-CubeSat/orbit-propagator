@@ -57,7 +57,7 @@ int main()
    //double t1 = 432000.00;  //10000;
 
 
-   double t1 = 20;
+   double t1 = 2;
    double x1[6];
    double vmean[6], kmean[6];
 
@@ -108,15 +108,15 @@ int main()
    fprintf(hOutput, "%-.10lf\n%-.10lf\n%-.10lf\n", x1[3], x1[4], x1[5]);   // xd,yd,zd
    //fprintf(hOutput, "Execution time %6.2f\n", elapsed);
 
-   VintToKep(planet, vmean, kmean);
+   //VintToKep(planet, vmean, kmean);
 
-   //fprintf(hOutput,"Vinti Mean Elements\n");
-   fprintf(hOutput,"%-.10lf\n", kmean[0]); //Semimajor axis =
-   fprintf(hOutput,"%-.10lf\n", kmean[1]); //Eccentricity   = 
-   fprintf(hOutput,"%-.10lf\n", kmean[2]); //Inclination    = 
-   fprintf(hOutput,"%-.10lf\n", kmean[3]); //Long Asc Node  = 
-   fprintf(hOutput,"%-.10lf\n", kmean[4]); //Arg of perigee = 
-   fprintf(hOutput,"%-.10lf", kmean[5]); //Mean anomaly   = 
+   ////fprintf(hOutput,"Vinti Mean Elements\n");
+   //fprintf(hOutput,"%-.10lf\n", kmean[0]); //Semimajor axis =
+   //fprintf(hOutput,"%-.10lf\n", kmean[1]); //Eccentricity   = 
+   //fprintf(hOutput,"%-.10lf\n", kmean[2]); //Inclination    = 
+   //fprintf(hOutput,"%-.10lf\n", kmean[3]); //Long Asc Node  = 
+   //fprintf(hOutput,"%-.10lf\n", kmean[4]); //Arg of perigee = 
+   //fprintf(hOutput,"%-.10lf", kmean[5]); //Mean anomaly   = 
    
    fclose(hOutput);
 }
