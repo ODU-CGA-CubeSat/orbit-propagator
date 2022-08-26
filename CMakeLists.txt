@@ -74,6 +74,7 @@ add_executable(test_vinti6
     src/fasa03.c
     src/faur03.c
     src/fame03.c
+    src/coord_conversion.c
 )
 
 target_include_directories(test_vinti6
