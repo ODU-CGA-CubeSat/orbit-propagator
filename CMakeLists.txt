@@ -3,6 +3,9 @@
 # $ cmake --version
 cmake_minimum_required(VERSION 3.5)
 
+# Show debug symbols
+set(CMAKE_CXX_FLAGS_DEBUG  "-g")
+
 # Set the project name
 project (orbit-propagator)
 
