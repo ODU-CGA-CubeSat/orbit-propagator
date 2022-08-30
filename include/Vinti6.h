@@ -1,9 +1,9 @@
 /*----------------------------------------------------------------------------
- * VINTI.H ... Header for Vinti functions
+ * VINTI6.H ... Header for Vinti functions
  *--------------------------------------------------------------------------*/
 
-#if !defined(_VINTI_H_)
-#define _VINTI_H_
+#if !defined(_VINTI6_H_)
+#define _VINTI6_H_
 
 #include <math.h>
 //#include "Kepler1.h"
