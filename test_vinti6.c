@@ -121,6 +121,7 @@ void test_ITRS_to_GCRS(void)
 
 	iauRxp(it2rc, itrs, gcrs); // itrs * transform matrix (it2rc)
 
+	// Compared with MATLAB output of ECEF to ECI
 	// Verify GCRS (ECI) vector for x
 	TEST_ASSERT_FLOAT_WITHIN(9.5, gcrs[0], 3988588.14831142);
 	// Verify GCRS (ECI) vector for y
@@ -130,7 +131,15 @@ void test_ITRS_to_GCRS(void)
 }
 
 
-//static void test_LLA_to_ECEF_state_vect(void)
+//static void test_LLA_to_ITRS_state_vect(void)
+//{   
+//   double lat_i = 51.64;
+//   double lon_i = 0;
+//   double alt_i = 170 * 10^3;
+//   double 
+//}
+//
+//static void test_LLA_to_GCRS_state_vect(void
 //{
 //   // Recieve first and last gps pings. i.e., (lat_i lon_i alt_i), (lat_f lon_f alt_f)
 //   //   Where _i denotes initial gps ping, _f denotes final gps ping during one duty cycle
