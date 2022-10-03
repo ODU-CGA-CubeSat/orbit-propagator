@@ -1,5 +1,49 @@
 #include "coord_conversion.h"
 
+StateVectorCalc(double lla_t1[3], double lla_t2[3], double deltaT, int iy, int im, int id, int ih, int min, double sec, double StateVector[6]){
+// Psuedo Code for State Vector Calc:
+// 
+// Time() (at t1?)
+// deltaT
+// 	
+//   LLAstateVect = lla_t1, lla_t2
+// 
+//   StateVectorCalc(lla_t1,lla_t2,time, StateVector)
+// 	
+//     LLA_to_ECEF(lla_t1,ECEF_t1)
+// 
+//     LLA_to_ECEF(lla_t2,ECEF_t2)
+// 
+//     ECEF_to_ECI(time,coord_matrix)
+// 
+//     ECI_t1 = Multiply(ECEF_t1,coord_matrix)
+// 	
+//     ECI_t2 = Multiply(ECEF_t2,coord_matrix)
+// 
+//     pos = average(ECI_t1, ECI_t2)
+// 	
+//     veloc = FiniteDiff(ECI_t1,ECI_t2)
+// 
+//     StateVector = {pos, veloc}
+//     
+// End Psuedo Code
+    
+    double ecef_t1[3] = {0,0,0};
+    double ecef_t2[3] = {0,0,0};
+    lla_to_eci(lla_t1[0], lla_t1[1], lla_t1[2], ecef_t1);
+    lla_to_eci(lla_t2[0], lla_t2[1], lla_t2[2], ecef_t2);
+    double it2rc_matrix[3][3] = {0,0,0, 0,0,0, 0,0,0};
+    ecef_to_eci(iy, im, id, ih, min, sec, it2rc_matrix);
+    double eci_t1[3] = {0,0,0};
+    double eci_t2[3] = {0,0,0};
+    iauRxp(it2rc_matrix, ecef_t1, eci_t1); // itrs * transform matrix (it2rc)
+    iauRxp(it2rc_matrix, ecef_t2, eci_t2);
+    for (int i = 0; i<= 3; i++){
+ 	StateVector[i] = (eci_t1[i] + eci_t2[i])/2; // Average position
+	StateVector[i+3] = (eci_t1[i] - eci_t2[i])/deltaT; // Average velocity
+    }
+}
+
 void lla_to_eci(double lat, double lon, double alt, double X[3]) {
 //	Converts latitude (deg), longitude (deg) and altitude (m) to ECEF frame
 //	   https://en.wikipedia.org/wiki/Geographic_coordinate_conversion#From_geodetic_to_ECEF_coordinates     

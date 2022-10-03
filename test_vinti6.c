@@ -139,27 +139,45 @@ void test_ITRS_to_GCRS(void)
 //   double 
 //}
 //
-//static void test_LLA_to_GCRS_state_vect(void
-//{
+static void test_LLA_to_GCRS_state_vect(void)
+{
 //   // Recieve first and last gps pings. i.e., (lat_i lon_i alt_i), (lat_f lon_f alt_f)
 //   //   Where _i denotes initial gps ping, _f denotes final gps ping during one duty cycle
 //
 //   // Convert initial and final lat lon alt to ECI => (xi yi zi), (xf yf zf)
 //   // Compute midpoint position. e.g., x0 = average(xi,xf)
-//   double lat_i = 51.64;
-//   double lon_i = 0;
-//   double alt_i = 170 * 10^3;
-//   double lat_f = 51.62;
-//   double lon_f = 0.02;
-//   double alt_f = 170.01 * 10^3;
-//   double eci_i = lla_to_eci(lat_i, lon_i, alt_i, jd_time_i);
-//   double eci_f = lla_to_eci(lat_f, lon_f, alt_f, jd_time_f);
-//   
+     double lla_i[3] = {51.64, 0, 170 * pow(10,3)};
+     double lla_f[3] = {51.4, 0.3, 170.01 * pow(10,3)};
+     double deltaT = 5;
+     int iy, im, id, ih, min;
+     double sec;
+     iy = 2023;
+     im = 3;
+     id = 10;
+     ih = 12;
+     min = 0;
+     sec = 0.0;
+     
+     double StateVector[6] = {0,0,0,0,0,0};
+     StateVectorCalc(lla_i, lla_f, deltaT, iy, im, id, ih, min, sec, StateVector);
+     // Compared with MATLAB output of LLA to ECI
+     // Verify GCRS (ECI) State vector for x
+     TEST_ASSERT_FLOAT_WITHIN(9.5, StateVector[0], 4001274.85988405);
+     // Verify GCRS (ECI) vector for y
+     TEST_ASSERT_FLOAT_WITHIN(9.5, StateVector[1], -865283.469878299);
+     // Verify GCRS (ECI) vector for z
+     TEST_ASSERT_FLOAT_WITHIN(9.5, StateVector[2], 5093921.692695);
+     // Verify GCRS (ECI) vector for dxdt
+     TEST_ASSERT_FLOAT_WITHIN(9.5, StateVector[3], -5094.43509554826);
+     // Verify GCRS (ECI) vector for dydt
+     TEST_ASSERT_FLOAT_WITHIN(9.5, StateVector[4], -3267.95358198741);
+     // Verify GCRS (ECI) vector for dzdt
+     TEST_ASSERT_FLOAT_WITHIN(9.5, StateVector[5], 3421.56636752933);
+//
 //   // Compute average velocity xd yd zd. e.g., xd0 = (xf-xi)/delta_t
 //
 //   // Note: Average velocity is approximated to occur at the same time as the midpoint position
-//   
-//
+
 //   // Verify ECI state vector for x i
 //   TEST_ASSERT_EQUAL_FLOAT(eci_i[0], 3854.79365731171)
 //
@@ -179,7 +197,7 @@ void test_ITRS_to_GCRS(void)
 //   TEST_ASSERT_EQUAL_FLOAT(eci_f[2], 5101.36097196698);
 //
 //   // Values compared to MATLAB function's "lla2eci" output 
-//}
+}
 
 //static void test_avg_veloc_calc(void)
 //{ 
@@ -202,6 +220,7 @@ int main(void)
    RUN_TEST(test_output_state_vect_for_leo);
    RUN_TEST(test_output_state_vect_for_heo);
    RUN_TEST(test_ITRS_to_GCRS);
+   RUN_TEST(test_LLA_to_GCRS_state_vect);
 
    return UnityEnd();
 }
