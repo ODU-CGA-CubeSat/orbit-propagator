@@ -38,22 +38,22 @@ static void test_output_state_vect_for_leo(void)
    Vinti6(planet, t0, x0, t1, x1, vmean);
 
    // Verify ECI state vector for x
-   TEST_ASSERT_EQUAL_FLOAT(x1[0], -485.5222682586);
+   TEST_ASSERT_EQUAL_FLOAT(-485.5222682586, x1[0]);
 
    // Verify ECI state vector for y
-   TEST_ASSERT_EQUAL_FLOAT(x1[1], -3123.5190458862);
+   TEST_ASSERT_EQUAL_FLOAT(-3123.5190458862, x1[1]);
 
    // Verify ECI state vector for z
-   TEST_ASSERT_EQUAL_FLOAT(x1[2], 5796.3841118105);
+   TEST_ASSERT_EQUAL_FLOAT(5796.3841118105, x1[2]);
 
    // Verify ECI state vector for xd
-   TEST_ASSERT_EQUAL_FLOAT(x1[3], 3.9097618929);
+   TEST_ASSERT_EQUAL_FLOAT(3.9097618929, x1[3]);
 
    // Verify ECI state vector for yd
-   TEST_ASSERT_EQUAL_FLOAT(x1[4], -6.0846992371);
+   TEST_ASSERT_EQUAL_FLOAT(-6.0846992371, x1[4]);
 
    // Verify ECI state vector for zd
-   TEST_ASSERT_EQUAL_FLOAT(x1[5], -2.8777002798);
+   TEST_ASSERT_EQUAL_FLOAT(-2.8777002798, x1[5]);
 }
 
 static void test_output_state_vect_for_heo(void)
@@ -81,22 +81,22 @@ static void test_output_state_vect_for_heo(void)
 	Vinti6(planet, t0, x0, t1, x1, vmean);
 
 	// Verify ECI state vector for x
-	TEST_ASSERT_EQUAL_FLOAT(x1[0], 6712.0609670032);
+	TEST_ASSERT_EQUAL_FLOAT(6712.0609670032, x1[0]);
 
 	// Verify ECI state vector for y
-	TEST_ASSERT_EQUAL_FLOAT(x1[1], -3985.3574556188);
+	TEST_ASSERT_EQUAL_FLOAT(-3985.3574556188, x1[1]);
 
 	// Verify ECI state vector for z
-	TEST_ASSERT_EQUAL_FLOAT(x1[2], -981.3263536512);
+	TEST_ASSERT_EQUAL_FLOAT(-981.3263536512, x1[2]);
 
 	// Verify ECI state vector for xd
-	TEST_ASSERT_EQUAL_FLOAT(x1[3], 2.7986992752);
+	TEST_ASSERT_EQUAL_FLOAT(2.7986992752, x1[3]);
 
 	// Verify ECI state vector for yd
-	TEST_ASSERT_EQUAL_FLOAT(x1[4], 5.5685271110);
+	TEST_ASSERT_EQUAL_FLOAT(5.5685271110, x1[4]);
 
 	// Verify ECI state vector for zd
-	TEST_ASSERT_EQUAL_FLOAT(x1[5], -3.4494924891);
+	TEST_ASSERT_EQUAL_FLOAT(-3.4494924891, x1[5]);
 }
 
 void test_ITRS_to_GCRS(void)
@@ -123,11 +123,11 @@ void test_ITRS_to_GCRS(void)
 
 	// Compared with MATLAB output of ECEF to ECI
 	// Verify GCRS (ECI) vector for x
-	TEST_ASSERT_FLOAT_WITHIN(9.5, gcrs[0], 3988588.14831142);
+	TEST_ASSERT_FLOAT_WITHIN(9.5, 3988588.14831142, gcrs[0]);
 	// Verify GCRS (ECI) vector for y
-	TEST_ASSERT_FLOAT_WITHIN(9.5, gcrs[1], -873464.380671477);
+	TEST_ASSERT_FLOAT_WITHIN(9.5, -873464.380671477, gcrs[1]);
 	// Verify GCRS (ECI) vector for z
-	TEST_ASSERT_FLOAT_WITHIN(9.5, gcrs[2], 5102129.90415257);
+	TEST_ASSERT_FLOAT_WITHIN(9.5, 5102129.90415257, gcrs[2]);
 }
 
 
@@ -162,17 +162,17 @@ static void test_LLA_to_GCRS_state_vect(void)
      StateVectorCalc(lla_i, lla_f, deltaT, iy, im, id, ih, min, sec, StateVector);
      // Compared with MATLAB output of LLA to ECI
      // Verify GCRS (ECI) State vector for x
-     TEST_ASSERT_FLOAT_WITHIN(9.5, StateVector[0], 4001274.85988405);
+     TEST_ASSERT_FLOAT_WITHIN(9.5, 4001274.85988405, StateVector[0]);
      // Verify GCRS (ECI) vector for y
-     TEST_ASSERT_FLOAT_WITHIN(9.5, StateVector[1], -865283.469878299);
+     TEST_ASSERT_FLOAT_WITHIN(9.5, -865283.469878299, StateVector[1]);
      // Verify GCRS (ECI) vector for z
-     TEST_ASSERT_FLOAT_WITHIN(9.5, StateVector[2], 5093921.692695);
+     TEST_ASSERT_FLOAT_WITHIN(9.5, 5093921.692695, StateVector[2]);
      // Verify GCRS (ECI) vector for dxdt
-     TEST_ASSERT_FLOAT_WITHIN(9.5, StateVector[3], -5094.43509554826);
+     TEST_ASSERT_FLOAT_WITHIN(9.5, -5094.43509554826, StateVector[3]);
      // Verify GCRS (ECI) vector for dydt
-     TEST_ASSERT_FLOAT_WITHIN(9.5, StateVector[4], -3267.95358198741);
+     TEST_ASSERT_FLOAT_WITHIN(9.5, -3267.95358198741, StateVector[4]);
      // Verify GCRS (ECI) vector for dzdt
-     TEST_ASSERT_FLOAT_WITHIN(9.5, StateVector[5], 3421.56636752933);
+     TEST_ASSERT_FLOAT_WITHIN(9.5, 3421.56636752933, StateVector[5]);
 //
 //   // Compute average velocity xd yd zd. e.g., xd0 = (xf-xi)/delta_t
 //
