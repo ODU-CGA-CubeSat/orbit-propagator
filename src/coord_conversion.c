@@ -1,6 +1,6 @@
 #include "coord_conversion.h"
 
-StateVectorCalc(double lla_t1[3], double lla_t2[3], double deltaT, int iy, int im, int id, int ih, int min, double sec, double StateVector[6]){
+void StateVectorCalc(double lla_t1[3], double lla_t2[3], double deltaT, int iy, int im, int id, int ih, int min, double sec, double StateVector[6]){
 // Psuedo Code for State Vector Calc:
 // 
 // Time() (at t1?)
