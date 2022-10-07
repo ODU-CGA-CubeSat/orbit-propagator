@@ -121,8 +121,11 @@ void test_ITRS_to_GCRS(void)
 
 	iauRxp(it2rc, itrs, gcrs); // itrs * transform matrix (it2rc)
 
-	// Compared with MATLAB output of ECEF to ECI
-	// Verify GCRS (ECI) vector for x
+	// Compared with MATLAB output of ECEF to ECI:
+     // itrs = [4072000, 0, 5111000]
+     // utc = ([2023 3 10 12 0 0])
+     // GCRS = ecef2eci(utc,itrs)
+   // Verify GCRS (ECI) vector for x
 	TEST_ASSERT_FLOAT_WITHIN(9.5, 3988588.14831142, gcrs[0]);
 	// Verify GCRS (ECI) vector for y
 	TEST_ASSERT_FLOAT_WITHIN(9.5, -873464.380671477, gcrs[1]);
@@ -160,7 +163,9 @@ static void test_LLA_to_GCRS_state_vect(void)
      
      double StateVector[6] = {0,0,0,0,0,0};
      StateVectorCalc(lla_i, lla_f, deltaT, iy, im, id, ih, min, sec, StateVector);
-     // Compared with MATLAB output of LLA to ECI
+     // Compared with MATLAB output of LLA to ECI:
+       // lla = [51.64, 0, 170 * 10^3]
+       // eci = lla2eci(lla,utc)
      // Verify GCRS (ECI) State vector for x
      TEST_ASSERT_FLOAT_WITHIN(9.5, 4001274.85988405, StateVector[0]);
      // Verify GCRS (ECI) vector for y

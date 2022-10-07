@@ -38,7 +38,7 @@ void StateVectorCalc(double lla_t1[3], double lla_t2[3], double deltaT, int iy, 
     double eci_t2[3] = {0,0,0};
     iauRxp(it2rc_matrix, ecef_t1, eci_t1); // itrs * transform matrix (it2rc)
     iauRxp(it2rc_matrix, ecef_t2, eci_t2);
-    for (int i = 0; i<= 3; i++){
+    for (int i = 0; i<= 2; i++){
  	StateVector[i] = (eci_t1[i] + eci_t2[i])/2; // Average position
 	StateVector[i+3] = (eci_t1[i] - eci_t2[i])/deltaT; // Average velocity
     }
@@ -61,9 +61,9 @@ void lla_to_eci(double lat, double lon, double alt, double X[3]) {
     double slon = sin(lon*DD2R);
     double N = WGS84_A / sqrt(1.0 - (WGS84_E*WGS84_E) * (slat*slat));
 
-    X[1] = (N + alt) * clat * clon;
-    X[2] = (N + alt) * clat * slon;
-    X[3] = (N * (1.0 - WGS84_E*WGS84_E) + alt) * slat;
+    X[0] = (N + alt) * clat * clon;
+    X[1] = (N + alt) * clat * slon;
+    X[2] = (N * (1.0 - WGS84_E*WGS84_E) + alt) * slat;
 }
 
 void ecef_to_eci(int iy, int im, int id, int ih, int min, double sec, double it2rc[3][3]) {
