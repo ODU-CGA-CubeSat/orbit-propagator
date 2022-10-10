@@ -4,7 +4,7 @@ cd ~/orbit-propogator/
 format long g
 close all; clear all; %delete('build/outputStateVect.txt')
 % need actual mass
-SatMass = 4;                                % kg
+SatMass = 4.5;                                % kg
 r_earth = 6.371*10^3;                      %km
 load('DragParam_tumble.mat')
 DragParam=(DragParam_tumbling);  % N (m^2/s^2)^-1
@@ -54,7 +54,7 @@ endif
 
 Veloc_loop(i,:) = [x_ECI(4,i) x_ECI(5,i) x_ECI(6,i)]*1000; V(i) = norm(Veloc_loop(i,:));    %m/s
 velocUnitVector(i,:) = Veloc_loop(i,:)./V(i);
-FD_avg(i) = DragParam(round((altitude_loop(i)-0)/dragParamAltIncr+1),2) * V(i)^2;                         %N
+FD_avg(i) = DragParam(round((altitude_loop(i)-0)/dragParamAltIncr+1),2) * V(i)^2 / 3;  %modified drag model                       %N
 
 dV(i) = (FD_avg(i)*dt/SatMass); V2(i) = V(i) - dV(i);                                %m/s         
 % convert this value back into state vector
