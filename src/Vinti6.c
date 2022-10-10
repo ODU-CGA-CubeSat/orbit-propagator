@@ -375,7 +375,7 @@ void Vinti6 (double planet[4], double vt0, double x0[6], double vt1, double x1[6
    xk1 = xm*q2;
    d1  = sqrt((1 - g2*q2)/(s1*d5));
    ecc2 = 1 + p*gamma;
-   ecc  = sqrt(ecc2);      oe[1] = ecc;   // Vinti mean element (eccentricity)
+   ecc  = sqrt(fabs(ecc2));      oe[1] = ecc;   // Vinti mean element (eccentricity)
    rho1 = p/(1 + ecc);
 
   /*
@@ -624,7 +624,7 @@ void Vinti6 (double planet[4], double vt0, double x0[6], double vt1, double x1[6
       else
       {
          //shat = sign(1, sqrf)*sqrt(gamma*rho02 + 2*rho0 - p)/ecc;
-         shat = ( fabs(sqrf)/sqrf )*sqrt(gamma*rho02 + 2*rho0 - p)/ecc;
+         shat = ( fabs(sqrf)/sqrf )*sqrt(fabs(gamma*rho02 + 2*rho0 - p))/ecc;
 
          cacs =(rho0 - rho1)*gamma/ecc + 1;
          acs  = atan2(shat*smgam, cacs);
