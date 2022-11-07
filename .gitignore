@@ -51,5 +51,10 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+# BibTex
+*.bib.bak
+*.bib.sav.tmp
+
 # Build directory
 build/
+dist/
