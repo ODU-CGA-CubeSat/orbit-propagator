@@ -1,0 +1,21 @@
+= Model-Based CubeSat Flight-Software Architecture using a Docs-as-Code approach
+:bibtex-file: references.bib
+:bibtex-style: ieee
+:bibtex-order: appearance
+
+== Introduction and Background
+
+
+
+== Analysis Method
+
+
+
+== Conclusion & Future Work
+
+
+
+== References
+
+bibliography::[]
+

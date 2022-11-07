@@ -64,3 +64,31 @@ In the `build/` directory, run
 ```bash
 ctest -V
 ```
+
+## Research Papers for Sealion Mission Architecture
+
+### Recommended doctools
+
+It is recommended you install the following doctools for generating PDF or HTML documents.
+
+* [JabRef v5.6](https://github.com/JabRef/jabref/releases/tag/v5.6).
+* [asciidoctor-bibtex](https://github.com/asciidoctor/asciidoctor-bibtex#install).
+
+Alternatively, you can install & run the [SeaLion Mission Workspace (Kasm Image)](https://github.com/ODU-CGA-CubeSat/kasm-sealion-workspace)
+
+### Generating PDF or HTML documents
+
+For PDF documents:
+
+```
+asciidoctor research/OrbitPropagation.adoc -o dist/OrbitPropagation.pdf -r asciidoctor-pdf -r asciidoctor-diagram -r asciidoctor-bibtex -b pdf
+````
+
+For HTML documents:
+
+
+```
+asciidoctor research/OrbitPropagation.adoc -o dist/OrbitPropagation.html -r asciidoctor-diagram -r asciidoctor-bibtex
+```
+
+Once you run this step, you can locally view the documentation by opening `dist/abstract.html` in a web browser or by opening `dist/abstract.pdf` in a pdf viewer.
