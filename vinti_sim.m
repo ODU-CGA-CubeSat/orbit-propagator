@@ -1,6 +1,6 @@
-function [x_ECI] = vinti_sim(simDuration_hr, inputFileName, dragCondition, SatMass)
+function [x_ECI, Duration_hrs] = vinti_sim(simDuration_hr, inputFileName, dragCondition, SatMass)
   %% Vinti Simulation
-
+  
   % Interface:
   %   File?(go to correct directory)
   %   Stnd in/out
@@ -21,15 +21,15 @@ function [x_ECI] = vinti_sim(simDuration_hr, inputFileName, dragCondition, SatMa
   %cd ~/orbit-propogator/build
     
   %Sim polling rate
-  dt = 2; %s
-
+  dt = 60; %s
+  termination_alt = 65; % km
   % Drag Data
   c_d_tumbling = 2.4;
   c_d_front = 1.9; c_d_3U_edge = 1.5*3; % 3 based on area increase relative to 1U
   c_d_corner = 1.25*2; % 2 based on "_"
   c_d_boom = 1.15; % short cylinder assumption
-  S_Ref = 0.03; % m^2
-  A_Front = S_Ref;
+  A_Front = 0.01; % m^2
+  S_Ref = 0.07; % m^2
   b = 0.05; l = 0.5; % m
   A_boom = 4*b*l; % m^2
 
@@ -90,13 +90,14 @@ function [x_ECI] = vinti_sim(simDuration_hr, inputFileName, dragCondition, SatMa
     %x_meanElements(:,i) = VintiOutput(7:12); %needs updating
 
     altitude = (norm([x_ECI(1,i) x_ECI(2,i) x_ECI(3,i)]) - r_earth);           %km
-    if (altitude <= DragParam(1,1))
+    if (altitude <= termination_alt)
       break;
+      cd ..
     endif
 
     Veloc(1,:) = [x_ECI(4,i) x_ECI(5,i) x_ECI(6,i)]*1000; V = norm(Veloc(1,:));    %m/s
     velocUnitVector(1,:) = Veloc(1,:)./V;
-    FD_avg = DragParam(round((altitude-DragParam(1,1))/dragParamAltIncr+1),2) * V^2 / 3;  %modified drag model                       %N
+    FD_avg = DragParam(round((altitude-DragParam(1,1))/dragParamAltIncr+1),2) * V^2;  %modified drag model                       %N
 
     dV = (FD_avg*dt/SatMass); V2 = V - dV;                                %m/s         
     % convert this value back into state vector
@@ -106,7 +107,7 @@ function [x_ECI] = vinti_sim(simDuration_hr, inputFileName, dragCondition, SatMa
     csvwrite("inputStateVect.txt",round(x_ECI(:,i)*10^8)/10^8)
     fprintf("\t\t%% Complete %.1f\n",(i/n)*100)
   end
-
+  Duration_hrs = i*dt/3600;
   %crosprod(1:i,:) = cross(x_ECI(1:3,:), x_ECI(4:6,:))'; % Verify direction of oribt/rotation
   ##a = x_meanElements(1,:); e = x_meanElements(2,:);
   ##Apoapsis = a.*(1+e); Periapsis = a.*(1-e);
