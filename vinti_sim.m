@@ -24,12 +24,15 @@ function [x_ECI, Duration_hrs] = vinti_sim(simDuration_hr, inputFileName, dragCo
   dt = 60; %s
   termination_alt = 65; % km
   % Drag Data
-  c_d_tumbling = 2.4;
+  c_d_tumbling = 2.2;
+  %c_d_tumbling = 2.4;
   c_d_front = 1.9; c_d_3U_edge = 1.5*3; % 3 based on area increase relative to 1U
   c_d_corner = 1.25*2; % 2 based on "_"
   c_d_boom = 1.15; % short cylinder assumption
   A_Front = 0.01; % m^2
-  S_Ref = 0.07; % m^2
+  S_Ref = 0.031; % m^2
+  %S_Ref = A_Front;
+  %S_Ref = 0.07;
   b = 0.05; l = 0.5; % m
   A_boom = 4*b*l; % m^2
 
@@ -49,7 +52,11 @@ function [x_ECI, Duration_hrs] = vinti_sim(simDuration_hr, inputFileName, dragCo
       case "boom_front"
         DragParam(:,2) = DragParam(:,2) * (A_Front * c_d_front + A_boom * c_d_boom)/2;
       case "boom_tumbling"
-        DragParam(:,2) = DragParam(:,2) * c_d_tumbling*(A_Front + A_boom)/2;
+        DragParam(:,2) = DragParam(:,2) * (S_Ref + A_boom)/2 * c_d_tumbling;
+      case "3U_edge"
+        DragParam(:,2) = DragParam(:,2) * A_Front/2 * c_d_tumbling;
+      case "corner"
+        DragParam(:,2) = DragParam(:,2) * A_Front/2 * c_d_corner;
       end
   end
 
@@ -64,7 +71,7 @@ function [x_ECI, Duration_hrs] = vinti_sim(simDuration_hr, inputFileName, dragCo
   % Actual orbial data
   %   determine time step needed (currently hard coded as 20 s)
 
-  x_ECI = nan(6,n);
+  %x_ECI = nan(6,n);
   %x_meanElements = nan(6,n);
   %Apoapsis = nan(n,1);
   %Periapsis = nan(n,1);
