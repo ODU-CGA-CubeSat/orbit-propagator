@@ -4,3 +4,6 @@
 [submodule "manuscript-schema"]
 	path = manuscript-schema
 	url = git@github.com:ODU-CGA-CubeSat/manuscript-schema.git
+[submodule "manuscript-templates"]
+	path = manuscript-templates
+	url = git@github.com:ODU-CGA-CubeSat/manuscript-templates.git
