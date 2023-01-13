@@ -1,4 +1,4 @@
-function [x_ECI, Duration_hrs] = vinti_sim(simDuration_hr, inputFileName, dragCondition, SatMass)
+function [x_ECI, orbital_lifetime_hrs] = vinti_sim(max_simulation_time_hrs, inputFileName, dragCondition, SatMass)
   %% Vinti Simulation
   
   % Interface:
@@ -42,7 +42,7 @@ function [x_ECI, Duration_hrs] = vinti_sim(simDuration_hr, inputFileName, dragCo
     DragParam(:,2) = DragParam(:,2) * S_Ref/2 * c_d_tumbling;
     n = 1 * 2700; % X * 1.5 hrs (~1 orbit)
   else
-    n = simDuration_hr*3600/dt;
+    n = max_simulation_time_hrs*3600/dt;
     copyfile (inputFileName,"inputStateVect.txt")
     switch dragCondition
       case "tumbling"
@@ -114,7 +114,7 @@ function [x_ECI, Duration_hrs] = vinti_sim(simDuration_hr, inputFileName, dragCo
     csvwrite("inputStateVect.txt",round(x_ECI(:,i)*10^8)/10^8)
     fprintf("\t\t%% Complete %.1f\n",(i/n)*100)
   end
-  Duration_hrs = i*dt/3600;
+  orbital_lifetime_hrs = i*dt/3600;
   %crosprod(1:i,:) = cross(x_ECI(1:3,:), x_ECI(4:6,:))'; % Verify direction of oribt/rotation
   ##a = x_meanElements(1,:); e = x_meanElements(2,:);
   ##Apoapsis = a.*(1+e); Periapsis = a.*(1-e);
