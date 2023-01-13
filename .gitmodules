@@ -1,3 +1,6 @@
 [submodule "Unity"]
 	path = Unity
 	url = git@github.com:ThrowTheSwitch/Unity.git
+[submodule "manuscript-schema"]
+	path = manuscript-schema
+	url = git@github.com:ODU-CGA-CubeSat/manuscript-schema.git
