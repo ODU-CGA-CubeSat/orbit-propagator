@@ -96,7 +96,7 @@ Where:
 
   Outputs:
 - `x_ECI` gives propogated TLE data; and
-- `Duration_hrs` is sattalite lifetime based on reaching a termination altitude of 65 km
+- `Duration_hrs` is satallite lifetime based on reaching a termination altitude of 65 km
 
 Example usage:
 
