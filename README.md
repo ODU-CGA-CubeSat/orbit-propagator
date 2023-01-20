@@ -40,7 +40,7 @@ Create an `inputStateVect.txt` in the `build/` directory using ECI coordinates a
 In the `build/` directory, run main executable
 
 ```bash
-./VintiCode
+./orbit-propagator
 ```
 
 This outputs a new state vector to `outputStateVect.txt` (ECI cartesian and mean elements)
@@ -96,7 +96,7 @@ Where:
 
   Outputs:
 - `x_ECI` gives propogated TLE data; and
-- `Duration_hrs` is satallite lifetime based on reaching a termination altitude of 65 km
+- `Duration_hrs` is satellite lifetime based on reaching a termination altitude of 65 km
 
 Example usage:
 
