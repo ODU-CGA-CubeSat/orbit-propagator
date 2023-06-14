@@ -66,10 +66,13 @@ function [x_ECI, orbital_lifetime_hrs] = vinti_sim(max_simulation_time_hrs, inpu
 
   cd build
   for i=1:n
-    epoch_min(i) = i*dt/60;
-    if mod(epoch_min,GPS_period_min) == 0 % Ping GPS (i.e., get data from HPOP file)
+    epoch_min(i,1) = i*dt/60;
+    mod_epoch = mod(epoch_min(i),GPS_period_min);
+    if mod(epoch_min(i),GPS_period_min) == 0 % Ping GPS (i.e., get data from HPOP file)
       x_ECI(i,:) = GPS.data(i+1,2:7);
+      disp('GPS')
     else %  Propagate between GPS Pings
+      disp('propagate')
       % Call C code Vinti Executable
       system('./orbit-propagator')
 
@@ -93,7 +96,7 @@ function [x_ECI, orbital_lifetime_hrs] = vinti_sim(max_simulation_time_hrs, inpu
       x_ECI(i,4:6) = V2*velocUnitVector(1,:)/1000;                                      %km/s
     endif
     % Send new ECI State Vector to input file for use by Vinti C program
-    csvwrite("inputStateVect.txt",round(x_ECI(i,:)*10^8)/10^8)
+    csvwrite("inputStateVect.txt",transpose(round(x_ECI(i,:)*10^8)/10^8))
     fprintf("\t\t%% Complete %.1f\n",(i/n)*100)
   end
   cd ..
