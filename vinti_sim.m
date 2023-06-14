@@ -1,4 +1,4 @@
-function [x_ECI, orbital_lifetime_hrs] = vinti_sim(max_simulation_time_hrs, inputFileName, dragCondition, SatMass, outputFileName)
+function [x_ECI, orbital_lifetime_hrs] = vinti_sim(max_simulation_time_hrs, inputFileName, dragCondition, SatMass, GPSFileName, outputFileName)
   %% Vinti Simulation
   
   % Interface:
@@ -15,7 +15,7 @@ function [x_ECI, orbital_lifetime_hrs] = vinti_sim(max_simulation_time_hrs, inpu
   DragParam = AtmosDensity; % kg/m^3
   r_earth = 6.371*10^3;                      %km
   dragParamAltIncr = DragParam(2,1)-DragParam(1,1); %km
-  GPS = importdata ("HPOP_cD2_2_J2000_Position.csv",",",1); % Load GPS [Position, Velocity] data (ECI)
+  GPS = importdata (GPSFileName,",",1); % Load GPS [Position, Velocity] data (ECI)
   
   %Sim polling rate
   dt = 60; %s
