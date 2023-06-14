@@ -92,7 +92,7 @@ Data can be simulated or real but it must vary with a timestep of 60 s.
 
 In Octave, navigate to `orbit-propagator` and from "Command Window" (in Octave) call:
 
-`[x_ECI, orbital_lifetime_hrs] = vinti_sim(max_simulation_time_hrs, 'inputFileName', 'dragCondition', SatMass, 'GPSFileName', 'OutputFileName')`
+`[x_ECI, orbital_lifetime_hrs] = vinti_sim(max_simulation_time_hrs, 'inputFileName', 'dragCondition', SatMass, 'GPSFileName', GPS_period_min, 'OutputFileName')`
 
 Where,
 
@@ -102,6 +102,7 @@ Inputs:
 - `dragCondition` is the string value describing whether the cubeSat is: `tumbling`, `front`, `boom_front`, `boom_tumbling`; and
 - `SatMass` is the numeric value of the CubeSat mass (e.g., 4.5 kg)
 - 'GPSFileName' is the string value of the .csv file containing GPS ephemeris data (time and state vector)
+-  GPS_period_min is the numeric value of how often the satellite will ping the GPS in minutes
 - 'OutputFileName' is the string value of the .csv file for ephemeris data
 
 Outputs:
@@ -112,4 +113,4 @@ Outputs:
 
 Example usage:
 
-`[stateVector,orbital_lifetime_hrs] = vinti_sim(2,"STK_initialCond.txt","tumbling",4)`
+`[stateVector,orbital_lifetime_hrs] = vinti_sim(2,"STK_initialCond.txt","tumbling",4,"HPOP_cD2_2_J2000_Position.csv",30,"Vinti_ephemeris_tumbling_4kg")`

@@ -1,4 +1,4 @@
-function [x_ECI, orbital_lifetime_hrs] = vinti_sim(max_simulation_time_hrs, inputFileName, dragCondition, SatMass, GPSFileName, outputFileName)
+function [x_ECI, orbital_lifetime_hrs] = vinti_sim(max_simulation_time_hrs, inputFileName, dragCondition, SatMass, GPSFileName, GPS_period_min, outputFileName)
   %% Vinti Simulation
   
   % Interface:
@@ -67,7 +67,7 @@ function [x_ECI, orbital_lifetime_hrs] = vinti_sim(max_simulation_time_hrs, inpu
   cd build
   for i=1:n
     epoch_min(i) = i*dt/60;
-    if mod(epoch_min,10) == 0 % Ping GPS (i.e., get data from HPOP file)
+    if mod(epoch_min,GPS_period_min) == 0 % Ping GPS (i.e., get data from HPOP file)
       x_ECI(i,:) = GPS.data(i+1,2:7);
     else %  Propagate between GPS Pings
       % Call C code Vinti Executable
