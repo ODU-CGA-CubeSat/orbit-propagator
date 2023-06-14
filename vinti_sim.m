@@ -1,4 +1,4 @@
-function [x_ECI, orbital_lifetime_hrs] = vinti_sim(max_simulation_time_hrs, inputFileName, dragCondition, SatMass)
+function [x_ECI, orbital_lifetime_hrs] = vinti_sim(max_simulation_time_hrs, inputFileName, dragCondition, SatMass, outputFileName)
   %% Vinti Simulation
   
   % Interface:
@@ -15,7 +15,8 @@ function [x_ECI, orbital_lifetime_hrs] = vinti_sim(max_simulation_time_hrs, inpu
   DragParam = AtmosDensity; % kg/m^3
   r_earth = 6.371*10^3;                      %km
   dragParamAltIncr = DragParam(2,1)-DragParam(1,1); %km
-    
+  GPS = importdata ("HPOP_cD2_2_J2000_Position.csv",",",1); % Load GPS [Position, Velocity] data (ECI)
+  
   %Sim polling rate
   dt = 60; %s
   termination_alt = 65; % km
@@ -65,32 +66,37 @@ function [x_ECI, orbital_lifetime_hrs] = vinti_sim(max_simulation_time_hrs, inpu
 
   cd build
   for i=1:n
-    % Call C code Vinti Executable
-    system('./orbit-propagator')
+    epoch_min(i) = i*dt/60;
+    if mod(epoch_min,10) == 0 % Ping GPS (i.e., get data from HPOP file)
+      x_ECI(i,:) = GPS.data(i+1,2:7);
+    else %  Propagate between GPS Pings
+      % Call C code Vinti Executable
+      system('./orbit-propagator')
 
-    %Get Data from Output of Vinti program
-    VintiOutput = csvread("outputStateVect.txt");
-    %Store ECI state vector
-    x_ECI(:,i) = VintiOutput(1:6);
+      %Get Data from Output of Vinti program
+      VintiOutput = csvread("outputStateVect.txt");
+      %Store ECI state vector
+      x_ECI(i,:) = VintiOutput(1:6);
 
-    altitude = (norm([x_ECI(1,i) x_ECI(2,i) x_ECI(3,i)]) - r_earth);           %km
-    if (altitude <= termination_alt)
-      break;
-      cd ..
+      altitude = (norm([x_ECI(i,1) x_ECI(i,2) x_ECI(i,3)]) - r_earth);           %km
+      if (altitude <= termination_alt)
+        break;
+        cd ..
+      endif
+
+      Veloc(1,:) = [x_ECI(i,4) x_ECI(i,5) x_ECI(i,6)]*1000; V = norm(Veloc(1,:));    %m/s
+      velocUnitVector(1,:) = Veloc(1,:)./V;
+      FD_avg = DragParam(round((altitude-DragParam(1,1))/dragParamAltIncr+1),2) * V^2;  %modified drag model                       %N
+
+      dV = (FD_avg*dt/SatMass); V2 = V - dV;                                %m/s         
+      % convert this value back into state vector
+      x_ECI(i,4:6) = V2*velocUnitVector(1,:)/1000;                                      %km/s
     endif
-
-    Veloc(1,:) = [x_ECI(4,i) x_ECI(5,i) x_ECI(6,i)]*1000; V = norm(Veloc(1,:));    %m/s
-    velocUnitVector(1,:) = Veloc(1,:)./V;
-    FD_avg = DragParam(round((altitude-DragParam(1,1))/dragParamAltIncr+1),2) * V^2;  %modified drag model                       %N
-
-    dV = (FD_avg*dt/SatMass); V2 = V - dV;                                %m/s         
-    % convert this value back into state vector
-    x_ECI(4:6,i) = V2*velocUnitVector(1,:)/1000;                                      %km/s
-
     % Send new ECI State Vector to input file for use by Vinti C program
-    csvwrite("inputStateVect.txt",round(x_ECI(:,i)*10^8)/10^8)
+    csvwrite("inputStateVect.txt",round(x_ECI(i,:)*10^8)/10^8)
     fprintf("\t\t%% Complete %.1f\n",(i/n)*100)
   end
   cd ..
   orbital_lifetime_hrs = i*dt/3600;
+  csvwrite(outputFileName,[epoch_min./60,x_ECI])
  end
