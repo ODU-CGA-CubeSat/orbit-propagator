@@ -12,10 +12,10 @@ function [x_ECI, orbital_lifetime_hrs] = vinti_sim_reconfigured()
 
   % Inputs
   GPSFileName = input("Name of GPS data file (60 s time step): ");
-  outputFileName = input("Name of Output file for Ephemeris Data: ");
   max_simulation_time_hrs = input("Simulation End Time (hrs) = ");
   fprintf("Drag Coefficient, C_d:\n 1.9 for frontwise stable attitude,\n 2.2 for tumbling,\n 2.4 for conservative tumbling.\n ");
   c_d = input ("C_d = ");
+##  disp(c_d)
   fprintf("Reference Drag Area, S_ref:\n for a 3U CubeSat:\n 0.01 m^2 for frontwise stable attitude,\n 0.031 m^2 for tumbling.\n ");
   S_Ref = input("S_ref (m^2) = ");
   SatMass = input("Satellite Mass (kg) = ");
@@ -89,7 +89,7 @@ function [x_ECI, orbital_lifetime_hrs] = vinti_sim_reconfigured()
     epoch_min(i,1) = (i-1)*dt/60;
     mod_epoch = mod(epoch_min(i),GPS_period_min);
     if mod(epoch_min(i),GPS_period_min) == 0 % Ping GPS (i.e., get data from HPOP file)
-      x_ECI(i,:) = GPS.data(i+1,2:7);
+      x_ECI(i,:) = GPS.data(i,2:7);
       disp('GPS')
     else %  Propagate between GPS Pings
       disp('propagate')
@@ -121,5 +121,6 @@ function [x_ECI, orbital_lifetime_hrs] = vinti_sim_reconfigured()
   end
   cd ..
   orbital_lifetime_hrs = (i-1)*dt/3600;
+  outputFileName = ['VintiEphemeris_cd',c_d,'_S_ref',S_Ref,'GPS_period',GPS_period_min];
   csvwrite(outputFileName,[epoch_min./60,x_ECI])
  end
