@@ -1,4 +1,4 @@
-function [x_ECI, orbital_lifetime_hrs] = vinti_sim_reconfigured()
+function [x_ECI, orbital_lifetime_hrs] = vinti_sim_reconfigured(GPSFileName,max_simulation_time_hrs,c_d,S_Ref,SatMass,GPS_period_min)
   %% Vinti Simulation
   
   % Interface:
@@ -10,23 +10,26 @@ function [x_ECI, orbital_lifetime_hrs] = vinti_sim_reconfigured()
   % Outputs:
   %   
 
-  % Inputs
-  GPSFileName = input("Name of GPS data file (60 s time step): ");
-  max_simulation_time_hrs = input("Simulation End Time (hrs) = ");
-  fprintf("Drag Coefficient, C_d:\n 1.9 for frontwise stable attitude,\n 2.2 for tumbling,\n 2.4 for conservative tumbling.\n ");
-  c_d = input ("C_d = ");
-##  disp(c_d)
-  fprintf("Reference Drag Area, S_ref:\n for a 3U CubeSat:\n 0.01 m^2 for frontwise stable attitude,\n 0.031 m^2 for tumbling.\n ");
-  S_Ref = input("S_ref (m^2) = ");
-  SatMass = input("Satellite Mass (kg) = ");
-  GPS_period_min = input("GPS polling period (minutes) = ");
-  % End Inputs
+  if nargin==0
+    % Inputs
+    GPSFileName = input("Name of GPS data file (60 s time step): ");
+    max_simulation_time_hrs = input("Simulation End Time (hrs) = ");
+    fprintf("Drag Coefficient, C_d:\n 1.9 for frontwise stable attitude,\n 2.2 for tumbling,\n 2.4 for conservative tumbling.\n ");
+    c_d = input ("C_d = ");
+  ##  disp(c_d)
+    fprintf("Reference Drag Area, S_ref:\n for a 3U CubeSat:\n 0.01 m^2 for frontwise stable attitude,\n 0.031 m^2 for tumbling.\n ");
+    S_Ref = input("S_ref (m^2) = ");
+    SatMass = input("Satellite Mass (kg) = ");
+    GPS_period_min = input("GPS polling period (minutes) = ");
+    % End Inputs
+  end
   
   format long g
   load('atmosDensity.mat')  
-  DragParam = AtmosDensity; % kg/m^3
-  r_earth = 6.371*10^3;                      %km
-  dragParamAltIncr = DragParam(2,1)-DragParam(1,1); %km
+  DensityAltIncr = AtmosDensity(2,1)-AtmosDensity(1,1); %km
+  %DragParam = AtmosDensity; % kg/m^3
+  r_MSL = 6.371*10^3;                      %km
+  %dragParamAltIncr = DragParam(2,1)-DragParam(1,1); %km
   GPS = importdata (GPSFileName,",",1); % Load GPS [Position, Velocity] data (ECI)
   csvwrite("build/inputStateVect.txt",transpose(GPS.data(1,2:7)))
   %Sim polling rate
@@ -36,7 +39,7 @@ function [x_ECI, orbital_lifetime_hrs] = vinti_sim_reconfigured()
 ##  c_d = 2.2;
 ##  S_Ref = 0.031;
 ##  SatMass = 5.5;
-  DragParam(:,2) = DragParam(:,2) * S_Ref/2 * c_d;
+  %DragParam(:,2) = DragParam(:,2) * S_Ref/2 * c_d;
   n = max_simulation_time_hrs*3600/dt+1;
 ##  %c_d_tumbling = 2.4;
 ##  c_d_front = 1.9; c_d_3U_edge = 1.5*3; % 3 based on area increase relative to 1U
@@ -81,9 +84,14 @@ function [x_ECI, orbital_lifetime_hrs] = vinti_sim_reconfigured()
   velocUnitVector = nan(1,3);
   dV = nan(1,1);
   V2 = nan(1,1);
-  V = nan(1,1);
+  V1 = nan(1,1);
   FD_avg = nan(1,1);
 
+  % Initilize density for use in loop
+  altitude = (norm([x_ECI(1,1) x_ECI(1,2) x_ECI(1,3)]) - r_MSL);           %km
+  rho_1 = AtmosDensity(round((altitude-AtmosDensity(1,1))/DensityAltIncr+1),2); % kg/m^3
+  Veloc(1,:) = [x_ECI(1,4) x_ECI(1,5) x_ECI(1,6)]*1000; V0 = norm(Veloc(1,:));    %m/s
+  
   cd build
   for i=2:n
     epoch_min(i,1) = (i-1)*dt/60;
@@ -101,17 +109,24 @@ function [x_ECI, orbital_lifetime_hrs] = vinti_sim_reconfigured()
       %Store ECI state vector
       x_ECI(i,:) = VintiOutput(1:6);
 
-      altitude = (norm([x_ECI(i,1) x_ECI(i,2) x_ECI(i,3)]) - r_earth);           %km
+      altitude = (norm([x_ECI(i,1) x_ECI(i,2) x_ECI(i,3)]) - r_MSL)           %km
       if (altitude <= termination_alt)
         break;
         cd ..
       endif
 
-      Veloc(1,:) = [x_ECI(i,4) x_ECI(i,5) x_ECI(i,6)]*1000; V = norm(Veloc(1,:));    %m/s
-      velocUnitVector(1,:) = Veloc(1,:)./V;
-      FD_avg = DragParam(round((altitude-DragParam(1,1))/dragParamAltIncr+1),2) * V^2;  %modified drag model                       %N
-
-      dV = (FD_avg*dt/SatMass); V2 = V - dV;                                %m/s         
+      Veloc(1,:) = [x_ECI(i,4) x_ECI(i,5) x_ECI(i,6)]*1000; V1 = norm(Veloc(1,:));    %m/s
+      velocUnitVector(1,:) = Veloc(1,:)./V1;
+      
+      rho_0 = rho_1; % kg/m^3
+      rho_1 = AtmosDensity(round((altitude-AtmosDensity(1,1))/DensityAltIncr+1),2); % kg/m^3
+      
+      dV = ( 1/V0 + ( (c_d*S_Ref/(2*SatMass)) * (rho_0 + (rho_1-rho_0)/2)*dt )  ) ^ (-1) - V0 % m/s
+      V2 = V1 + dV;       % m/s 
+      V0 = V2;
+##      FD_avg = DragParam(round((altitude-DragParam(1,1))/dragParamAltIncr+1),2) * V1^2;  %modified drag model                       %N
+##
+##      dV = (FD_avg*dt/SatMass); V2 = V1 - dV;                                %m/s         
       % convert this value back into state vector
       x_ECI(i,4:6) = V2*velocUnitVector(1,:)/1000;                                      %km/s
     endif
@@ -121,6 +136,6 @@ function [x_ECI, orbital_lifetime_hrs] = vinti_sim_reconfigured()
   end
   cd ..
   orbital_lifetime_hrs = (i-1)*dt/3600;
-  outputFileName = ['VintiEphemeris_cd',c_d,'_S_ref',S_Ref,'GPS_period',GPS_period_min];
+  outputFileName = ['VintiEphemeris_cd',num2str(c_d),'_S_ref',num2str(S_Ref),'_GPS_period',num2str(GPS_period_min)];
   csvwrite(outputFileName,[epoch_min./60,x_ECI])
  end
