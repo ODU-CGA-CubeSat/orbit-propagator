@@ -39,7 +39,7 @@ int main()
    double x0[6]={0,0,0,0,0,0};
    char str0[30], str1[30], str2[30], str3[30], str4[30], str5[30];
    char *ptr0, *ptr1, *ptr2, *ptr3, *ptr4, *ptr5;
-   fscanf(hInput, "%s %s %s %s %s %s", str0, str1, str2, str3, str4, str5);
+   fscanf(hInput, "%s %s %s %s %s %s %s", str0, str1, str2, str3, str4, str5);
    //printf("read striong =>\n%s\n%s\n%s\n%s\n%s\n%s\n\n", str0, str1, str2, str3, str4, str5);
    x0[0] = strtod(str0, &ptr0); x0[1] = strtod(str1, &ptr1);
    x0[2] = strtod(str2, &ptr2); x0[3] = strtod(str3, &ptr3);
@@ -57,7 +57,7 @@ int main()
    //double t1 = 432000.00;  //10000;
 
 
-   double t1 = 60;
+   double t1 = 60*60;
    double x1[6];
    double vmean[6], kmean[6];
 
