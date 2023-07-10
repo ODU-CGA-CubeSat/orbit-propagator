@@ -36,8 +36,8 @@ c_d = 2.2;
 S_Ref = 0.031;
 ##S_Ref = 0.01; % m^2
 SatMass = 5.5;
-GPS_period_min = 6*60;
-dt = 3*60*60;
+GPS_period_min = 2*60;
+dt = 1*60*60;
 %%% End Inputs %%%
 
 x = vinti_sim_reconfigured(GPSFileName,max_simulation_time_hrs,c_d,S_Ref,SatMass,GPS_period_min,dt);
@@ -73,11 +73,11 @@ legend(h1,"boxoff")
 xlabel('Orbit Number'); ylabel('km')
 title('Absoulte Position Errors - Vinti+Drag')
 
-##a_gps = sqrt(GPS.data(1:n,2).^2+GPS.data(1:n,3).^2+GPS.data(1:n,4).^2);
-##a = sqrt(x(:,1).^2+x(:,2).^2+x(:,3).^2);
+##r_gps = sqrt(GPS.data(1:n,2).^2+GPS.data(1:n,3).^2+GPS.data(1:n,4).^2);
+##r = sqrt(x(:,1).^2+x(:,2).^2+x(:,3).^2);
 ##figure(2);
-##plot(time/T,a); hold on
-##plot(time/T,a_gps); hold off
+##plot(time/T,r); hold on
+##plot(time/T,r_gps); hold off
 ##title('Radial Position')
 ##xlabel('Orbit Number'); ylabel('km')
 ##legend ('Vinti + 1.5 hour GPS','GPS Data')

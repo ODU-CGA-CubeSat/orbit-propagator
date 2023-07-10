@@ -57,61 +57,71 @@ function [x_ECI, orbital_lifetime_hrs] = vinti_filter(GPSFileName,max_simulation
   
 ##  L_last = 1;
   
+  ObservationsDesired = 5;
   cd build
   for i=2:n
-    epoch_min(i,1) = (i-1)*dt/60
+    epoch_min(i,1) = (i-1)*dt/60;
     mod_epoch = mod(epoch_min(i),GPS_period_min);
     if mod_epoch == 0 % Ping GPS (i.e., get data from HPOP file)
       x_ECI(i,:) = z_GPS(abs(t_z_GPS-epoch_min(i)/60) < 0.01,:);
       n_GPS_pings = n_GPS_pings + 1
-      t_z_GPS(t_z_GPS-epoch_min(i)/60<0.01)
+      t_z_GPS(t_z_GPS-epoch_min(i)/60<0.01);
       disp('GPS')
     else %  Propagate between GPS Pings
       disp('propagate')
-      for j = 1:1%n_GPS_pings
+      oldestObsvUsed = max(n_GPS_pings-ObservationsDesired,0)
+      ObservationsUsed = n_GPS_pings-oldestObsvUsed
+      clear kjxij; clear k
+      for j = oldestObsvUsed+1:n_GPS_pings
         j
-        kj = (j/n_GPS_pings)
-        time_diff = (epoch_min(i) - t_z_GPS(j)*60)*60 %s
-        InitialState = z_GPS(j,:)
-        csvwrite("inputStateVect.txt",transpose([InitialState, time_diff]))
-        system('./orbit-propagator') % Propagate without drag
-        %Store Data from Output of Vinti program in ECI state vector
-        VintiOutput = csvread("outputStateVect.txt");
-        
-        altitude = (norm([VintiOutput(1) VintiOutput(2) VintiOutput(3)]) - r_MSL)           %km
-        if (altitude < termination_alt)
-          disp('altitude condition')
-          break;
-          cd ..
-        endif
-        
-        % Compute Drag pertubation between points using propagated state as estiamte for density condition
-        Veloc(1,:) = [InitialState(4) InitialState(5) InitialState(6)]*1000; V0 = norm(Veloc(1,:))    %m/s
-        velocUnitVector(1,:) = Veloc(1,:)./V0;
-        
-        rho_0 = rho_1; % kg/m^3
-        rho_1 = AtmosDensity(round((altitude-AtmosDensity(1,1))/DensityAltIncr+1),2); % kg/m^3
-        
-        V1_ = ( 1/V0 + ( (c_d*S_Ref/(2*SatMass)) * (rho_0 + (rho_1-rho_0)/2)*dt )  ) ^ (-1) % m/s
-  ##      V0_effective = V1_;
-        V0_effective = .065*V0+.935*V1_ % m/s
-  ##      V0_effective = .5*V0+.5*V1_ % m/s
-        InitialState(4:6) = V0_effective*velocUnitVector(1,:)/1000;
-        csvwrite("inputStateVect.txt",transpose([InitialState, time_diff])) 
-        
-        % Call C code Vinti Executable
-        system('./orbit-propagator')
-        %Get Data from Output of Vinti program
-        xij = csvread("outputStateVect.txt") % state prediction at point i using state estimate j
-        kjxij(j,:) = kj*xij  % Apply gain
-        
+##        if j == n_GPS_pings - (ObservationsUsed + 1);
+##          disp('5 observations used')
+##          break
+##          kj = ( ((j-oldestObsvUsed)/ObservationsUsed)
+          k(j-oldestObsvUsed,1) = (j-oldestObsvUsed)^3;
+          time_diff = (epoch_min(i) - t_z_GPS(j)*60)*60 %s
+          ti=t_z_GPS(j)*60
+          InitialState = z_GPS(j,:);
+          csvwrite("inputStateVect.txt",transpose([InitialState, time_diff]))
+          system('./orbit-propagator') % Propagate without drag
+          %Store Data from Output of Vinti program in ECI state vector
+          VintiOutput = csvread("outputStateVect.txt");
+          
+          altitude = (norm([VintiOutput(1) VintiOutput(2) VintiOutput(3)]) - r_MSL)           %km
+          if (altitude < termination_alt)
+            disp('altitude condition')
+            break;
+            cd ..
+          endif
+          
+          % Compute Drag pertubation between points using propagated state as estiamte for density condition
+          Veloc(1,:) = [InitialState(4) InitialState(5) InitialState(6)]*1000; V0 = norm(Veloc(1,:));    %m/s
+          velocUnitVector(1,:) = Veloc(1,:)./V0;
+          
+          rho_0 = rho_1; % kg/m^3
+          rho_1 = AtmosDensity(round((altitude-AtmosDensity(1,1))/DensityAltIncr+1),2); % kg/m^3
+          
+          V1_ = ( 1/V0 + ( (c_d*S_Ref/(2*SatMass)) * (rho_0 + (rho_1-rho_0)/2)*time_diff )  ) ^ (-1); % m/s
+    ##      V0_effective = V1_;
+##          V0_effective = .065*V0+.935*V1_; % m/s
+##          V0_effective = V0;
+          V0_effective = .6*V0+.4*V1_ % m/s
+          InitialState(4:6) = V0_effective*velocUnitVector(1,:)/1000;
+          csvwrite("inputStateVect.txt",transpose([InitialState, time_diff])) 
+          
+          % Call C code Vinti Executable
+          system('./orbit-propagator')
+          %Get Data from Output of Vinti program
+          xij(j-oldestObsvUsed,:) = csvread("outputStateVect.txt"); % state prediction at point i using state estimate j
       end
     
       %Store ECI state vector
-      x_ECI(i,:) = sum(kjxij) / ( (n_GPS_pings+1)/2 );
+      k = k/sum(k)
+      x_ECI(i,:) = sum(k.*xij,1);
+##      x_ECI(i,:) = sum(kjxij,1) / ( (ObservationsUsed+1)/2 );
     endif
     % Send new ECI State Vector to input file for use by Vinti C program
-    csvwrite("inputStateVect.txt",transpose([x_ECI(i,:), time_diff]))
+    %csvwrite("inputStateVect.txt",transpose([x_ECI(i,:), time_diff]))
     fprintf("\t\t%% Complete %.1f\n",(i/n)*100)
   end
   cd ..
