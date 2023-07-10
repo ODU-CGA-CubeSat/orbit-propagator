@@ -30,7 +30,7 @@ function [x_ECI, orbital_lifetime_hrs,count_validater] = vinti_sim_reconfigured(
   DensityAltIncr = AtmosDensity(2,1)-AtmosDensity(1,1); %km
   r_MSL = 6.371*10^3;                      %km
   GPS = importdata (GPSFileName,",",1); % Load GPS [Position, Velocity] data (ECI)
-  csvwrite("build/inputStateVect.txt",transpose(GPS.data(1,2:7)))
+  csvwrite("build/inputStateVect.txt",transpose([GPS.data(1,2:7), dt]))
 
   termination_alt = 65; % km
   n = max_simulation_time_hrs*3600/dt+1;
@@ -63,6 +63,7 @@ function [x_ECI, orbital_lifetime_hrs,count_validater] = vinti_sim_reconfigured(
     else %  Propagate between GPS Pings
       disp('propagate')
       system('./orbit-propagator')
+      % consider looping until relative error is within some tolerance
       %Store Data from Output of Vinti program in ECI state vector
       x_ECI(i,:) = csvread("outputStateVect.txt");
       
@@ -84,7 +85,7 @@ function [x_ECI, orbital_lifetime_hrs,count_validater] = vinti_sim_reconfigured(
       V0_effective = .065*V0+.935*V1_ % m/s
 ##      V0_effective = .5*V0+.5*V1_ % m/s
       x_ECI(i-1,4:6) = V0_effective*velocUnitVector(1,:)/1000; 
-      csvwrite("inputStateVect.txt",transpose(round(x_ECI(i-1,:)*10^8)/10^8)) 
+      csvwrite("inputStateVect.txt",transpose([x_ECI(i-1,:), dt])) 
       
       % Call C code Vinti Executable
       system('./orbit-propagator')
@@ -97,7 +98,7 @@ function [x_ECI, orbital_lifetime_hrs,count_validater] = vinti_sim_reconfigured(
 ##      L_last=length(x_ECI(:,1));
     endif
     % Send new ECI State Vector to input file for use by Vinti C program
-    csvwrite("inputStateVect.txt",transpose(round(x_ECI(i,:)*10^8)/10^8))
+    csvwrite("inputStateVect.txt",transpose([x_ECI(i,:), dt]))
     fprintf("\t\t%% Complete %.1f\n",(i/n)*100)
   end
   cd ..

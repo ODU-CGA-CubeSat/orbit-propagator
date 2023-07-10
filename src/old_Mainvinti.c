@@ -37,15 +37,13 @@ int main()
    /*double x0[6] = {2328.96594, -5995.21600,  1719.97894,
                    2.91110113, -0.98164053, -7.09049922};*/
    double x0[6]={0,0,0,0,0,0};
-   double t1;
-   char str0[30], str1[30], str2[30], str3[30], str4[30], str5[30], str6[30];
-   char *ptr0, *ptr1, *ptr2, *ptr3, *ptr4, *ptr5, *ptr6;
-   fscanf(hInput, "%s %s %s %s %s %s %s", str0, str1, str2, str3, str4, str5, str6);
+   char str0[30], str1[30], str2[30], str3[30], str4[30], str5[30];
+   char *ptr0, *ptr1, *ptr2, *ptr3, *ptr4, *ptr5;
+   fscanf(hInput, "%s %s %s %s %s %s %s", str0, str1, str2, str3, str4, str5);
    //printf("read striong =>\n%s\n%s\n%s\n%s\n%s\n%s\n\n", str0, str1, str2, str3, str4, str5);
    x0[0] = strtod(str0, &ptr0); x0[1] = strtod(str1, &ptr1);
    x0[2] = strtod(str2, &ptr2); x0[3] = strtod(str3, &ptr3);
    x0[4] = strtod(str4, &ptr4); x0[5] = strtod(str5, &ptr5);
-   t1 = strtod(str6, &ptr6);
    //printf("read double=>\n %f\n%f\n%f\n%f\n%f\n%f\n", x0[0], x0[1], x0[2], x0[3], x0[4], x0[5]);
    fclose(hInput);
 
@@ -59,7 +57,7 @@ int main()
    //double t1 = 432000.00;  //10000;
 
 
-   //double t1 = 60;
+   double t1 = 60*60;
    double x1[6];
    double vmean[6], kmean[6];
 

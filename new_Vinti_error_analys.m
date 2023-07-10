@@ -27,7 +27,7 @@ T = 2*pi*sqrt(a^3/GM)/3600; % hrs
 %%% Inputs %%%
 GPSFileName = "HPOP_J2000_State_Vector.csv";
 ##GPSFileName = "HPOP_J2000_State_Vector_cD1_9.csv";
-max_simulation_time_hrs = 52;
+max_simulation_time_hrs = 3;
 ##c_d = 2.353;
 c_d = 2.2;
 ##c_d = 1.9;
@@ -40,34 +40,30 @@ GPS_period_min = 6*60;
 dt = 3*60*60;
 %%% End Inputs %%%
 
-x = vinti_sim_reconfigured(GPSFileName,max_simulation_time_hrs,c_d,S_Ref,SatMass,GPS_period_min,dt);
-x_noDrag = vinti_sim_reconfigured(GPSFileName,max_simulation_time_hrs,0,0,SatMass,GPS_period_min,dt);
+x = vinti_filter(GPSFileName,max_simulation_time_hrs,c_d,S_Ref,SatMass,GPS_period_min,dt);
+##x_noDrag = vinti_sim_reconfigured(GPSFileName,max_simulation_time_hrs,0,0,SatMass,GPS_period_min,dt);
 
 GPS = importdata (GPSFileName,",",1);
 n = length(x(:,1));
 time = GPS.data(1:dt/60:n*dt/60,1);
 x_GPS = GPS.data(1:dt/60:n*dt/60,2:7);
 
-##x_GPS = x_GPS((mod(60*time,dt/60) < 0.0001),:);
-##time = time(mod(60*time,dt/60) < 0.0001);
-
-error_mat = x-x_GPS;
-error_radialPos = sqrt(error_mat(:,1).^2+error_mat(:,2).^2+error_mat(:,3).^2);
-
 % Run case with twice per obit GPS ping
 %GPS_period_min = 45;
 ##x_2 = vinti_sim_reconfigured(GPSFileName,max_simulation_time_hrs,2.2,S_Ref,SatMass,GPS_period_min);
 
-error_mat_noDrag = x_noDrag(1:n,:)-x_GPS;
-error_radialPos_noDrag = sqrt(error_mat_noDrag(:,1).^2+error_mat_noDrag(:,2).^2+error_mat_noDrag(:,3).^2);
+error_mat = x-x_GPS;
+error_radialPos = sqrt(error_mat(:,1).^2+error_mat(:,2).^2+error_mat(:,3).^2);
+##error_mat_noDrag = x_noDrag(1:n,:)-x_GPS;
+##error_radialPos_noDrag = sqrt(error_mat_noDrag(:,1).^2+error_mat_noDrag(:,2).^2+error_mat_noDrag(:,3).^2);
 ##error_mat_2 = x_2(1:n,:)-x_GPS;
 ##error_radialPos_2 = sqrt(error_mat_2(:,1).^2+error_mat_2(:,2).^2+error_mat_2(:,3).^2);
 
-figure(1)
-plot(time/T,error_radialPos); hold on
-plot(time/T,error_radialPos_noDrag); hold off
+figure(2)
+plot(time/T,error_radialPos); %hold on
+##plot(time/T,error_radialPos_noDrag); hold off
 ##plot(time/T,error_radialPos_2); hold off
-h1 = legend('Vinti With Drag','Vinti Without Drag');
+##h1 = legend('Vinti With Drag','Vinti Without Drag');
 ##h1 = legend('T_G_P_S = 1/orbit','T_G_P_S = 2/orbit');
 legend(h1,"boxoff")
 xlabel('Orbit Number'); ylabel('km')
