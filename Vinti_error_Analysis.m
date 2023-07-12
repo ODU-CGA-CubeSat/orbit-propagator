@@ -27,7 +27,7 @@ T = 2*pi*sqrt(a^3/GM)/3600; % hrs
 %%% Inputs %%%
 GPSFileName = "HPOP_J2000_State_Vector.csv";
 ##GPSFileName = "HPOP_J2000_State_Vector_cD1_9.csv";
-max_simulation_time_hrs = 52;
+max_simulation_time_hrs = 53;
 ##c_d = 2.353;
 c_d = 2.2;
 ##c_d = 1.9;
@@ -36,7 +36,7 @@ c_d = 2.2;
 S_Ref = 0.031;
 ##S_Ref = 0.01; % m^2
 SatMass = 5.5;
-GPS_period_min = 2*60;
+GPS_period_min = 3*60;
 dt = 1*60*60;
 %%% End Inputs %%%
 
@@ -72,6 +72,7 @@ h1 = legend('Vinti With Drag','Vinti Without Drag');
 legend(h1,"boxoff")
 xlabel('Orbit Number'); ylabel('km')
 title('Absoulte Position Errors - Vinti+Drag')
+ylim([0 50])
 
 ##r_gps = sqrt(GPS.data(1:n,2).^2+GPS.data(1:n,3).^2+GPS.data(1:n,4).^2);
 ##r = sqrt(x(:,1).^2+x(:,2).^2+x(:,3).^2);
