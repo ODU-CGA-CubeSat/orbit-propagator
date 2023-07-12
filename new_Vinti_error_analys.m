@@ -27,7 +27,7 @@ T = 2*pi*sqrt(a^3/GM)/3600; % hrs
 %%% Inputs %%%
 GPSFileName = "HPOP_J2000_State_Vector.csv";
 ##GPSFileName = "HPOP_J2000_State_Vector_cD1_9.csv";
-max_simulation_time_hrs = 52;
+max_simulation_time_hrs = 53;
 ##c_d = 2.353;
 c_d = 2.2;
 ##c_d = 1.9;
@@ -36,16 +36,16 @@ c_d = 2.2;
 S_Ref = 0.031;
 ##S_Ref = 0.01; % m^2
 SatMass = 5.5;
-GPS_period_min = 6*60;
+GPS_period_min = 3*60;
 dt = 1*60*60;
 %%% End Inputs %%%
 
-x = vinti_filter(GPSFileName,max_simulation_time_hrs,c_d,S_Ref,SatMass,GPS_period_min,dt);
-x_noDrag = vinti_filter(GPSFileName,max_simulation_time_hrs,0,0,SatMass,GPS_period_min,dt);
+[t,x] = vinti_filter_sim(GPSFileName,max_simulation_time_hrs,c_d,S_Ref,SatMass,GPS_period_min,dt);
+[t_noDrag, x_noDrag] = vinti_filter_sim(GPSFileName,max_simulation_time_hrs,0,0,SatMass,GPS_period_min,dt);
 
 GPS = importdata (GPSFileName,",",1);
 n = length(x(:,1));
-time = GPS.data(1:dt/60:n*dt/60,1);
+##time = GPS.data(1:dt/60:n*dt/60,1);
 x_GPS = GPS.data(1:dt/60:n*dt/60,2:7);
 
 % Run case with twice per obit GPS ping
@@ -60,9 +60,10 @@ error_radialPos_noDrag = sqrt(error_mat_noDrag(:,1).^2+error_mat_noDrag(:,2).^2+
 ##error_radialPos_2 = sqrt(error_mat_2(:,1).^2+error_mat_2(:,2).^2+error_mat_2(:,3).^2);
 
 figure(2)
-plot(time/T,error_radialPos); hold on
-plot(time/T,error_radialPos_noDrag); hold off
-ylim([0 30])
+plot(t/T,error_radialPos); hold on
+plot(t_noDrag/T,error_radialPos_noDrag); hold off
+ylim([0 50])
+##ylim([0 30])
 ##plot(time/T,error_radialPos_2); hold off
 h1 = legend('Vinti With Drag','Vinti Without Drag');
 ##h1 = legend('T_G_P_S = 1/orbit','T_G_P_S = 2/orbit');
