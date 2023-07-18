@@ -1,4 +1,4 @@
-function [t, x_ECI, orbital_lifetime_hrs] = vinti_filter_sim(GPSFileName,max_simulation_time_hrs,c_d,S_Ref,SatMass,GPS_period_min,dt)
+function [t, x_ECI, orbital_lifetime_hrs] = vinti_filter_sim(GPSFileName,max_simulation_time_hrs,c_d,S_Ref,SatMass,GPS_period_min,dt, ObservationsDesired)
   if nargin==0
     % Inputs
     GPSFileName = input("Name of GPS data file (60 s time step): ");
@@ -11,6 +11,7 @@ function [t, x_ECI, orbital_lifetime_hrs] = vinti_filter_sim(GPSFileName,max_sim
     SatMass = input("Satellite Mass (kg) = ");
     GPS_period_min = input("GPS polling period (minutes) = ");
     dt = input("Propagate Time Delay, dt (s) = "); %s
+    ObservationsDesired = input("Number of GPS observations to use in filter = ");
     % End Inputs
   endif
   
@@ -37,6 +38,16 @@ function [t, x_ECI, orbital_lifetime_hrs] = vinti_filter_sim(GPSFileName,max_sim
   noise(:,4:6) = ns;
   z_GPS = z_GPS + noise;
   
+  % Add bias to GPS
+##  z_conf = 1.645; sigm = normrnd(0
+##  normrnd(0,
+##  bs = 33*abs(rand(N,3))/1000;
+##  bias = bs;
+##  bs = 2*abs(rand(N,3))/1000;
+##  bias(:,4:6) = bs
+  bias = [(17/1000)*ones(N,3), (0.11/1000)*ones(N,3)];
+  z_GPS = z_GPS + bias;
+  
   termination_alt = 65; % km
   % Parameters to pass to vinti_filter:
   extraParameters = struct('AtmosDensity',AtmosDensity, 'DensityAltIncr', DensityAltIncr, ...
@@ -49,7 +60,6 @@ function [t, x_ECI, orbital_lifetime_hrs] = vinti_filter_sim(GPSFileName,max_sim
   x_ECI(1,:) = z_GPS(1,:);
   n_GPS_pings = 1;
   
-  ObservationsDesired = 5;
   oldstObsv = 1;  % one gps ping already
   cd build
   for i=2:n
@@ -72,7 +82,7 @@ function [t, x_ECI, orbital_lifetime_hrs] = vinti_filter_sim(GPSFileName,max_sim
     % Send new ECI State Vector to input file for use by Vinti C program
     %csvwrite("inputStateVect.txt",transpose([x_ECI(i,:), time_diff]))
     fprintf("\t\t%% Complete %.1f\n",(i/n)*100)
-  end
+  endfor
   cd ..
   orbital_lifetime_hrs = (i-1)*dt/3600;
   outputFileName = ['VintiEphemeris_cd',num2str(c_d),'_S_ref',num2str(S_Ref),'_GPS_period',num2str(GPS_period_min),'.csv'];
@@ -122,26 +132,28 @@ function [t_hat_i, x_hat_ii, alt_cond] = vinti_filter(t_hat_l, x_hat_ll, t_z, z,
   system('./orbit-propagator')
   x_hat_il(1,:) = csvread("outputStateVect.txt");
   
-  % Initilize altitude, gain, and density at t_i_i based on state prediction
-  altitude = (norm([x_hat_il(1,1) x_hat_il(1,2) x_hat_il(1,3)]) - r_MSL);    % km
-  if altitude < termination_alt
+  % Initilize altitude and density at t_i_i based on state prediction
+  altitude0 = (norm([x_hat_il(1,1) x_hat_il(1,2) x_hat_il(1,3)]) - r_MSL);    % km
+  if altitude0 < termination_alt
     alt_cond = 1; % Pass altitude condition to simulation to stop running
     x_hat_ii = x_hat_il;
     return;
-  else
-    LoKc = 0.3; HiKc = 0.55;
-    AltHiKc = 200;
-    Kc = ( (altitude/AltHiKc) / exp(altitude/AltHiKc) ) * exp(1) * (HiKc - LoKc) + LoKc;
   endif
-  if altitude <= (length(altitude) - 1) * DensityAltIncr + altitude(1)  % term_alt < alt < max_alt
-    rho1 = AtmosDensity(round((altitude-AtmosDensity(1,1))/DensityAltIncr+1),2); % kg/m^3  
+  if altitude0 <= (length(altitude0) - 1) * DensityAltIncr + altitude0(1)  % term_alt < alt < max_alt
+    rho1 = AtmosDensity(round((altitude0-AtmosDensity(1,1))/DensityAltIncr+1),2); % kg/m^3  
   else    % alt > max_alt, i.e., beyond significant atmosphere
     rho1 = 0;
   endif
  
   % Compute density at tl
-  altitude = (norm([x_hat_ll(1,1) x_hat_ll(1,2) x_hat_ll(1,3)]) - r_MSL);
-  rho0 = AtmosDensity(round((altitude-AtmosDensity(1,1))/DensityAltIncr+1),2); % kg/m^3  
+  altitude1 = (norm([x_hat_ll(1,1) x_hat_ll(1,2) x_hat_ll(1,3)]) - r_MSL);
+  rho0 = AtmosDensity(round((altitude1-AtmosDensity(1,1))/DensityAltIncr+1),2); % kg/m^3  
+  
+  % Compute correction gain, K_c = f (mean(altitude between states))
+##  Kc = 1;
+  LoKc = 0.2; HiKc = 0.95;
+  AltHiKc = 190;
+  Kc = ( (mean([altitude0,altitude1])/AltHiKc) / exp( mean([altitude0,altitude1])/AltHiKc ) ) * exp(1) * (HiKc - LoKc) + LoKc;
   
   % Compute x_hat_il with drag
   x_hat_il(1,:) = dragRoutine(x_hat_ll, rho0, rho1, dt);
@@ -156,7 +168,7 @@ function [t_hat_i, x_hat_ii, alt_cond] = vinti_filter(t_hat_l, x_hat_ll, t_z, z,
   else
     x_hat_ii = x_hat_il;
     return;
-  end
+  endif
 
   % For each observation, propagate to ti, x_hat_ij, and compute error term relative to state prediction x_hat_il
   for j = 1:n
@@ -171,7 +183,7 @@ function [t_hat_i, x_hat_ii, alt_cond] = vinti_filter(t_hat_l, x_hat_ll, t_z, z,
     
     % Error Term, propagated between propagated observation and propagated state estimate
     e_hat_ij(j,:) = x_hat_ij(j,:) - x_hat_il;
-  end
+  endfor
   % Pertubation Matrix
   delta = kj .* e_hat_ij;
   % Pertubation vector
@@ -190,9 +202,9 @@ function [t_hat_i, x_hat_ii, alt_cond] = vinti_filter(t_hat_l, x_hat_ll, t_z, z,
     % Compute Effective velocity, i.e., some weighting of velocities at t_z(j) and t_i
 ##    V0_effective = V0;
 ##    V0_effective = .6*V0+.4*V1_drag % m/s
-##    V0_effective = 0.5*V0 + 0.5*V1_drag;  % Average Velocity
+    V0_effective = 0.5*V0 + 0.5*V1_drag;  % Average Velocity
 ##    V0_effective = 0.4*V0 + 0.6*V1_drag;
-    V0_effective = 0.2*V0 + 0.8*V1_drag;
+##    V0_effective = 0.2*V0 + 0.8*V1_drag;
 ##    V0_effective = .065*V0+.935*V1_drag; % m/s
 ##    V0_effective = V1_drag;
     % Update state at t_z(j) with effective velocity

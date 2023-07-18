@@ -36,12 +36,13 @@ c_d = 2.2;
 S_Ref = 0.031;
 ##S_Ref = 0.01; % m^2
 SatMass = 5.5;
-GPS_period_min = 3*60;
-dt = 1*60*60;
+GPS_period_min = 6*60;
+dt = 6*60*60;
 %%% End Inputs %%%
 
-[t,x] = vinti_filter_sim(GPSFileName,max_simulation_time_hrs,c_d,S_Ref,SatMass,GPS_period_min,dt);
-[t_noDrag, x_noDrag] = vinti_filter_sim(GPSFileName,max_simulation_time_hrs,0,0,SatMass,GPS_period_min,dt);
+[t,x] = vinti_filter_sim(GPSFileName,max_simulation_time_hrs,c_d,S_Ref,SatMass,GPS_period_min,dt,3);
+##[t_noDrag, x_noDrag] = vinti_filter_sim(GPSFileName,max_simulation_time_hrs,0,0,SatMass,GPS_period_min,dt,5);
+[t2,x2] = vinti_filter_sim(GPSFileName,max_simulation_time_hrs,c_d,S_Ref,SatMass,GPS_period_min,dt,1);
 
 GPS = importdata (GPSFileName,",",1);
 n = length(x(:,1));
@@ -50,22 +51,23 @@ x_GPS = GPS.data(1:dt/60:n*dt/60,2:7);
 
 % Run case with twice per obit GPS ping
 %GPS_period_min = 45;
-##x_2 = vinti_sim_reconfigured(GPSFileName,max_simulation_time_hrs,2.2,S_Ref,SatMass,GPS_period_min);
+##[t3,x3] = vinti_sim_reconfigured(GPSFileName,max_simulation_time_hrs,2.2,S_Ref,SatMass,GPS_period_min,5);
 
 error_mat = x-x_GPS;
 error_radialPos = sqrt(error_mat(:,1).^2+error_mat(:,2).^2+error_mat(:,3).^2);
-error_mat_noDrag = x_noDrag(1:n,:)-x_GPS;
-error_radialPos_noDrag = sqrt(error_mat_noDrag(:,1).^2+error_mat_noDrag(:,2).^2+error_mat_noDrag(:,3).^2);
-##error_mat_2 = x_2(1:n,:)-x_GPS;
-##error_radialPos_2 = sqrt(error_mat_2(:,1).^2+error_mat_2(:,2).^2+error_mat_2(:,3).^2);
+##error_mat_noDrag = x_noDrag(1:n,:)-x_GPS;
+##error_radialPos_noDrag = sqrt(error_mat_noDrag(:,1).^2+error_mat_noDrag(:,2).^2+error_mat_noDrag(:,3).^2);
+error_mat_2 = x2(1:n,:)-x_GPS;
+error_radialPos_2 = sqrt(error_mat_2(:,1).^2+error_mat_2(:,2).^2+error_mat_2(:,3).^2);
 
 figure(2)
 plot(t/T,error_radialPos); hold on
-plot(t_noDrag/T,error_radialPos_noDrag); hold off
-ylim([0 50])
+##plot(t_noDrag/T,error_radialPos_noDrag); hold off
+ylim([0 1])
 ##ylim([0 30])
-##plot(time/T,error_radialPos_2); hold off
-h1 = legend('Vinti With Drag','Vinti Without Drag');
+plot(t2/T,error_radialPos_2); hold off
+##h1 = legend('Vinti With Drag','Vinti Without Drag');
+h1 = legend('5 observations','1 Observations');
 ##h1 = legend('T_G_P_S = 1/orbit','T_G_P_S = 2/orbit');
 legend(h1,"boxoff")
 xlabel('Orbit Number'); ylabel('km')
