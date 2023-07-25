@@ -27,12 +27,12 @@ function [t, x_ECI, z_GPS] = kalman_filter_sim(GPSFileName,max_simulation_time_h
   
   % Add noise to Observations, corrupt gps data
   % position
-  CEP = 100/1000; sigma_pos = CEP/sqrt(2*log(2));
+  CEP = 10/1000; sigma_pos = CEP/sqrt(2*log(2));
   ns = rand(N,3); normalizer = abs(sum(ns,2));
   ns = normrnd(0,sigma_pos,N,1).*ns;% ./normalizer;
   noise = ns;
   % velocity
-  CEP = 20/1000; sigma_vel = CEP/sqrt(2*log(2));
+  CEP = 2/1000; sigma_vel = CEP/sqrt(2*log(2));
   ns = rand(N,3); normalizer = abs(sum(ns,2));
   ns = normrnd(0,sigma_vel,N,1).*ns;% ./normalizer;
   noise(:,4:6) = ns;
@@ -44,10 +44,10 @@ function [t, x_ECI, z_GPS] = kalman_filter_sim(GPSFileName,max_simulation_time_h
 ##  bias = bs;
 ##  bs = 2*abs(rand(N,3))/1000;
 ##  bias(:,4:6) = bs
-  bias = csvread("GPSBias.csv");
-  bias = bias(1:GPS_period_min:end,:);  
-##  bias = [(100/1000)*ones(N,3), (1/1000)*ones(N,3)];
-##  z_GPS = z_GPS + bias;
+##  bias = csvread("GPSBias.csv");
+##  bias = bias(1:GPS_period_min:end,:);  
+  bias = [(100/1000)*ones(N,3), (1/1000)*ones(N,3)];
+  z_GPS = z_GPS + bias;
   z_GPS = transpose(z_GPS);
   
   P = eye(6);
@@ -79,7 +79,6 @@ function [t, x_ECI, z_GPS] = kalman_filter_sim(GPSFileName,max_simulation_time_h
       disp('Pinging GPS')
     endif %  Propagate between GPS Pings 
     % Compute State Estimate using Vinti program, incorporating, drag and a filter
-    t_GPS(oldstObsv:n_GPS_pings)
     [t(1,i), x_ECI(:,i), P, Stop_condition] = Kalman_filter(epoch_min(i-1)/60, x_ECI(:,i-1), P, t_GPS(i), z_GPS(:,i), dt, extraParameters);
     if Stop_condition == 1
       disp('Altitude condition, Stopping Sim')
@@ -130,9 +129,9 @@ function [t_hat_i, x_hat_ii, P_ii, alt_cond] = Kalman_filter(t_hat_l, x_hat_ll, 
   t_hat_i = t_hat_l + dt/3600;
   
   % pos
-  CEP = 100/1000; sigm_pos = CEP/sqrt(2*log(2));
+  CEP = 10/1000; sigm_pos = CEP/sqrt(2*log(2));
   % velocity
-  CEP = 20/1000; sigm_vel = CEP/sqrt(2*log(2));
+  CEP = 2/1000; sigm_vel = CEP/sqrt(2*log(2));
   R = zeros(6);
   Qv = zeros(6,6); % random variance in velocity mostly due to drag
 
@@ -140,8 +139,8 @@ function [t_hat_i, x_hat_ii, P_ii, alt_cond] = Kalman_filter(t_hat_l, x_hat_ll, 
     R(i,i) = sigm_pos^2;
     R(i+3,i+3) = sigm_vel^2;
     
-    Qv(i,i) = (sigm_pos/100)^2;
-    Qv(i+3,i+3) = (2*sigm_vel/10)^2;
+##    Qv(i,i) = (.1)^2;
+    Qv(i+3,i+3) = (.1)^2;
   endfor
       
   alt_cond = 0;
@@ -151,30 +150,31 @@ function [t_hat_i, x_hat_ii, P_ii, alt_cond] = Kalman_filter(t_hat_l, x_hat_ll, 
 
   %%% Predict Step %%%
   % Compute x_hat_il from x_hat_ll without drag pertubation
-##  csvwrite("inputStateVect.txt",[x_hat_ll; dt])
-##  system('./orbit-propagator')
-##  x_hat_il = csvread("outputStateVect.txt");
-##  
-##  % Initilize altitude and density at t_i based on state prediction
-##  altitude_i = (norm([x_hat_il(1) x_hat_il(2) x_hat_il(3)]) - r_MSL);    % km
-##  if altitude_i < termination_alt
-##    alt_cond = 1; % Pass altitude condition to simulation to stop running
-##    x_hat_ii = x_hat_il;
-##    return;
-##  endif
-##  if altitude_i <= AtmosDensity(end,1)  % term_alt < alt < max_alt
-##    rho1 = AtmosDensity(round((altitude_i-AtmosDensity(1,1))/DensityAltIncr+1),2) % kg/m^3  
-##  else    % alt > max_alt, i.e., beyond significant atmosphere
-##    rho1 = 0;
-##  endif
-## 
-##  % Compute density at tl
-##  altitude_l = (norm([x_hat_ll(1) x_hat_ll(2) x_hat_ll(3)]) - r_MSL);
-##  rho0 = AtmosDensity(round((altitude_l-AtmosDensity(1,1))/DensityAltIncr+1),2) % kg/m^3  
-##  
-##  % Compute x_hat_il with drag
-##  x_ll_eff(:,1) = dragRoutine(x_hat_ll, rho0, rho1, dt);
-  [F, x_hat_il] = StateTransMatrix(x_hat_ll,dt)
+  csvwrite("inputStateVect.txt",[x_hat_ll; dt])
+  system('./orbit-propagator')
+  x_hat_il = csvread("outputStateVect.txt");
+  
+  % Initilize altitude and density at t_i based on state prediction
+  altitude_i = (norm([x_hat_il(1) x_hat_il(2) x_hat_il(3)]) - r_MSL);    % km
+  if altitude_i < termination_alt
+    alt_cond = 1; % Pass altitude condition to simulation to stop running
+    [F, x_hat_il] = StateTransMatrix(x_hat_ll,dt)
+  else
+    if altitude_i <= AtmosDensity(end,1)  % term_alt < alt < max_alt
+      rho1 = AtmosDensity(round((altitude_i-AtmosDensity(1,1))/DensityAltIncr+1),2) % kg/m^3  
+    else    % alt > max_alt, i.e., beyond significant atmosphere
+      rho1 = 0;
+    endif
+ 
+  % Compute density at tl
+  altitude_l = (norm([x_hat_ll(1) x_hat_ll(2) x_hat_ll(3)]) - r_MSL);
+  rho0 = AtmosDensity(round((altitude_l-AtmosDensity(1,1))/DensityAltIncr+1),2) % kg/m^3  
+  
+  % Compute x_hat_il with drag
+  x_ll_eff(:,1) = dragRoutine(x_hat_ll, rho0, rho1, dt);
+  [F, x_hat_il] = StateTransMatrix(x_ll_eff,dt)
+endif
+
   z_i
   Q = F*Qv*transpose(F);
   P_il = F*P_ll*transpose(F) + Q;
@@ -228,7 +228,8 @@ function [t_hat_i, x_hat_ii, P_ii, alt_cond] = Kalman_filter(t_hat_l, x_hat_ll, 
     V1_drag = ( 1/V0 + ( (c_d*S_Ref/(2*SatMass)) * (rho_0 + (rho_1-rho_0)/2)*dt )  ) ^ (-1); % m/s
     
     % Compute Effective velocity, i.e., some weighting of velocities at t_z(j) and t_i
-    V0_effective = 0.5*V0 + 0.5*V1_drag;  % Average Velocity
+##    V0_effective = 0.5*V0 + 0.5*V1_drag;  % Average Velocity
+    V0_effective = V1_drag;  % Average Velocity
     % Update state at t_z(j) with effective velocity
     x0_effective = x_0;
     x0_effective(4:6) = V0_effective*velocUnitVector0(1,:)/1000;
