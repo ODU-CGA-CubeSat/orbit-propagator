@@ -8,7 +8,7 @@
   c_d = 2.2;
   S_Ref = 0.031; % m^s
   SatMass = 5.5; % kg
-  GPS_period = 30*60; % s
+  GPS_period = 90*60; % s
   termination_alt = 65; % km
     %% End Inputs %%
   
@@ -27,7 +27,7 @@
   i = 0;
 ##  t_start = time();
 ##  t1 = time() - t_start;
-  t1 = 0; dt = 30;
+  t1 = 0; dt = 30; % For simulation only, time delay in system in seconds
   
   cd build
       
@@ -59,6 +59,7 @@
     rho_1 = rho_0;
     Veloc(1,:) = X0(4:6)*1000; V0 = norm(Veloc(1,:));    %m/s
     velocUnitVector(1,:) = Veloc(1,:)./V0;
+    X0_eff = X0(1:6);
     
     while ( (t1-t_last_gps) < GPS_period) 
       % Propagate between GPS Pings
@@ -74,9 +75,8 @@
 ##      endif
       
       V0_effective = 0.8*V0 + 0.2*( 1/V0 + ( (c_d*S_Ref/(2*SatMass)) * (rho_0 + (rho_1-rho_0)/2)*(t1-t0) )  ) ^ (-1);
-      x_l_eff = X0(1:6);
-      x_l_eff(4:6) = V0_effective*velocUnitVector(1,:)/1000; 
-      csvwrite("inputStateVect.txt",transpose([ x_l_eff, (t1-t0) ])) 
+      X0_eff(4:6) = V0_effective*velocUnitVector(1,:)/1000; 
+      csvwrite("inputStateVect.txt",transpose([ X0_eff, (t1-t0) ])) 
       
       % Call C code Vinti Executable
       system('./orbit-propagator');
